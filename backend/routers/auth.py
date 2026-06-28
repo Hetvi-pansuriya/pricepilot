@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +23,7 @@ ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 EXPIRE_HOURS = int(os.getenv("JWT_EXPIRE_HOURS", "24"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+security = HTTPBearer()
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -46,10 +46,16 @@ def create_access_token(user_id: uuid.UUID) -> str:
 
 # ─── Dependency: get current user ─────────────────────────────────────────────
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer()
+
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(security), 
     db: AsyncSession = Depends(get_db),
 ) -> User:
+    token = credentials.credentials 
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
