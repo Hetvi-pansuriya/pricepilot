@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 
 # Explicitly point at the .env file in the same directory as this script
 # This ensures it works whether uvicorn is launched from this dir or another
-_ENV_PATH = Path(__file__).parent / ".env"
-load_dotenv(dotenv_path=_ENV_PATH, override=True)
+load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,7 +27,6 @@ async def lifespan(app: FastAPI):
         print("SUCCESS: Database tables created/verified.")
     except Exception as e:
         print(f"WARNING: Could not connect to database on startup: {e}")
-        print("   Update DATABASE_URL in .env with correct credentials and restart.")
 
     # Create PDF output directory
     pdf_dir = os.path.join(os.path.dirname(__file__), "generated_pdfs")
@@ -42,7 +40,7 @@ async def lifespan(app: FastAPI):
         print("SUCCESS: Groq client initialized.")
     else:
         app.state.groq_client = None
-        print(f"WARNING: GROQ_API_KEY not set — looked in {_ENV_PATH}")
+        print("WARNING: GROQ_API_KEY not set.")
 
     yield
     # Shutdown: nothing to clean up
@@ -86,3 +84,8 @@ app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 def health():
     return {"status": "ok", "version": "1.0.0"}
 
+@app.get("/")
+def root():
+    return {
+        "message": "SaaS Pricing Analyzer API is running 🚀"
+    }
