@@ -12,7 +12,7 @@ from sqlalchemy.future import select
 
 from database import get_db
 from models import User
-from schemas import UserCreate, UserResponse, TokenResponse
+from schemas import UserCreate, LoginRequest, UserResponse, TokenResponse
 
 router = APIRouter()
 
@@ -103,7 +103,7 @@ async def signup(body: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(body: UserCreate, db: AsyncSession = Depends(get_db)):
+async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
 
