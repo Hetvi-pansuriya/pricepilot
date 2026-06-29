@@ -87,5 +87,5 @@ def health():
 @app.get("/")
 def root():
     return {
-        "message": "SaaS Pricing Analyzer API is running 🚀"
+        "message": "SaaS Pricing Analyzer API is running!"
     }
