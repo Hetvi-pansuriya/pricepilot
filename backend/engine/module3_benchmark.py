@@ -1,12 +1,13 @@
 """
-Module 3 — Competitor Benchmarking (Gemini call #2).
+Module 3 — Competitor Benchmarking (Groq call #2).
 
 Parses raw competitor scraped text, computes value scores,
 and produces a benchmark analysis against the target company.
 """
 
 import json
-from engine.gemini_utils import call_gemini_with_retry
+import copy
+from engine.groq_utils import call_groq_with_retry
 
 
 def _build_our_value_scores(tiers: list) -> list:
@@ -36,10 +37,10 @@ async def run_module3(
     m1_output: dict,
     m2_output: dict,
     competitors: list,
-    gemini_model,
+    groq_client,
 ) -> dict:
     """
-    Calls Gemini to parse competitor text and benchmark the target company.
+    Calls Groq to parse competitor text and benchmark the target company.
     Falls back to placeholder if no competitor data exists.
     """
     name = company_data.get("name", "Unknown")
@@ -52,19 +53,18 @@ async def run_module3(
     ]
 
     our_value_scores = _build_our_value_scores(tiers)
-    import copy
     empty = copy.deepcopy(_EMPTY_BENCHMARK)
     empty["benchmark"]["our_value_scores"] = our_value_scores
 
     if not usable_competitors:
         return empty
 
-    # Build competitor text block
+    # Build competitor text block (cap each to 6000 chars to stay within token limits)
     competitor_block = ""
     for comp in usable_competitors:
         competitor_block += (
             f"--- COMPETITOR: {comp.get('name', comp['url'])} (URL: {comp['url']}) ---\n"
-            f"{comp['raw_scraped_text'][:8000]}\n\n"  # cap to avoid prompt overflows
+            f"{comp['raw_scraped_text'][:6000]}\n\n"
         )
 
     tiers_summary = [
@@ -112,15 +112,15 @@ Respond ONLY with this exact JSON schema:
 
 Return ONLY the JSON. No markdown. No backticks."""
 
-    if gemini_model is None:
+    if groq_client is None:
         fallback = copy.deepcopy(empty)
-        fallback["error"] = "GEMINI_API_KEY not configured"
+        fallback["error"] = "GROQ_API_KEY not configured"
         fallback["module"] = "M3"
         return fallback
 
     try:
-        result = await call_gemini_with_retry(gemini_model, prompt)
-        # Ensure our_value_scores is always populated even if Gemini omits it
+        result = await call_groq_with_retry(groq_client, prompt)
+        # Ensure our_value_scores is always populated even if the model omits it
         if "benchmark" in result:
             if not result["benchmark"].get("our_value_scores"):
                 result["benchmark"]["our_value_scores"] = our_value_scores

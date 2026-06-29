@@ -1,12 +1,12 @@
 """
-Module 4 — Final Strategy Recommendations (Gemini call #3).
+Module 4 — Final Strategy Recommendations (Groq call #3).
 
 Synthesises outputs from M1, M2, M3 and generates exactly 3
 pricing strategies: conservative, aggressive, strategic.
 """
 
 import json
-from engine.gemini_utils import call_gemini_with_retry
+from engine.groq_utils import call_groq_with_retry
 
 
 _FALLBACK = {
@@ -20,11 +20,11 @@ async def run_module4(
     m1_output: dict,
     m2_output: dict,
     m3_output: dict,
-    gemini_model,
+    groq_client,
 ) -> dict:
     """
-    Calls Gemini to produce 3 alternative pricing strategies.
-    Falls back to a partial result if Gemini fails.
+    Calls Groq to produce 3 alternative pricing strategies.
+    Falls back to a partial result if Groq fails.
     """
     name = company_data.get("name", "Unknown")
     industry = company_data.get("industry", "Unknown")
@@ -75,15 +75,15 @@ Respond ONLY with this exact JSON:
 
 Return ONLY the JSON. No markdown. No backticks."""
 
-    if gemini_model is None:
+    if groq_client is None:
         return {
             **_FALLBACK,
-            "error": "GEMINI_API_KEY not configured",
+            "error": "GROQ_API_KEY not configured",
             "module": "M4",
         }
 
     try:
-        result = await call_gemini_with_retry(gemini_model, prompt)
+        result = await call_groq_with_retry(groq_client, prompt)
         return result
     except (ValueError, AttributeError) as e:
         return {

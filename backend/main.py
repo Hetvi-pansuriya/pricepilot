@@ -1,8 +1,12 @@
 import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
-load_dotenv()
+# Explicitly point at the .env file in the same directory as this script
+# This ensures it works whether uvicorn is launched from this dir or another
+_ENV_PATH = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=_ENV_PATH, override=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from routers import auth, companies, analysis, competitors
 
-import google.generativeai as genai
+from groq import Groq
 
 
 # ─── Lifespan ─────────────────────────────────────────────────────────────────
@@ -30,15 +34,15 @@ async def lifespan(app: FastAPI):
     pdf_dir = os.path.join(os.path.dirname(__file__), "generated_pdfs")
     os.makedirs(pdf_dir, exist_ok=True)
 
-    # Initialise Gemini client
-    api_key = os.getenv("GEMINI_API_KEY", "")
+    # Initialise Groq client
+    api_key = os.getenv("GROQ_API_KEY", "")
+    print(f"DEBUG: GROQ_API_KEY loaded = {'YES (' + api_key[:8] + '...)' if api_key else 'NO — check .env file'}")
     if api_key:
-        genai.configure(api_key=api_key)
-        app.state.gemini_model = genai.GenerativeModel("gemini-2.5-flash")
-        print("SUCCESS: Gemini model initialized.")
+        app.state.groq_client = Groq(api_key=api_key)
+        print("SUCCESS: Groq client initialized.")
     else:
-        app.state.gemini_model = None
-        print("WARNING: GEMINI_API_KEY not set — AI modules will return stubs.")
+        app.state.groq_client = None
+        print(f"WARNING: GROQ_API_KEY not set — looked in {_ENV_PATH}")
 
     yield
     # Shutdown: nothing to clean up
@@ -81,3 +85,4 @@ app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 @app.get("/health", tags=["health"])
 def health():
     return {"status": "ok", "version": "1.0.0"}
+

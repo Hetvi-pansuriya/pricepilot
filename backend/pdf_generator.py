@@ -65,7 +65,7 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
   .tag-undifferentiated { background: #e0eeff; color: #2980b9; }
 
   /* Strategy cards */
-  .strategies { display: flex; gap: 16px; }
+  .strategies { display: flex; gap: 28px; }
   .strategy-card { flex: 1; border-radius: 10px; padding: 16px; border: 1px solid #e0e7ff; }
   .strategy-card.conservative { border-top: 4px solid #27ae60; }
   .strategy-card.aggressive { border-top: 4px solid #e74c3c; }

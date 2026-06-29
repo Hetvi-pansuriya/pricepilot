@@ -1,18 +1,18 @@
 """
-Module 2 — Feature Audit (Gemini call #1).
+Module 2 — Feature Audit (Groq call #1).
 
 Classifies every feature into one of 4 types:
   gatekeeper | blocker | right_placed | undifferentiated
 """
 
 import json
-from engine.gemini_utils import call_gemini_with_retry
+from engine.groq_utils import call_groq_with_retry
 
 
-async def run_module2(company_data: dict, gemini_model) -> dict:
+async def run_module2(company_data: dict, groq_client) -> dict:
     """
-    Calls Gemini to audit feature placement across pricing tiers.
-    Falls back to a partial result with an error key if Gemini fails.
+    Calls Groq to audit feature placement across pricing tiers.
+    Falls back to a partial result with an error key if Groq fails.
     """
     name = company_data.get("name", "Unknown")
     industry = company_data.get("industry", "Unknown")
@@ -64,9 +64,9 @@ Return ONLY the JSON. No markdown. No backticks. No explanation outside the JSON
 Example output:
 {{"feature_audit": [{{"feature_name": "API access", "tier_name": "Starter", "classification": "gatekeeper", "reasoning": "API access is a power-user feature being given away on the cheapest tier", "recommended_action": "move to Pro tier"}}], "summary": {{"gatekeepers_found": 1, "blockers_found": 0, "right_placed": 0, "undifferentiated": 0, "biggest_issue": "API access is underpriced"}}}}"""
 
-    if gemini_model is None:
+    if groq_client is None:
         return {
-            "error": "GEMINI_API_KEY not configured",
+            "error": "GROQ_API_KEY not configured",
             "module": "M2",
             "feature_audit": [],
             "summary": {
@@ -74,12 +74,12 @@ Example output:
                 "blockers_found": 0,
                 "right_placed": 0,
                 "undifferentiated": 0,
-                "biggest_issue": "Feature audit unavailable — GEMINI_API_KEY not set.",
+                "biggest_issue": "Feature audit unavailable — GROQ_API_KEY not set.",
             },
         }
 
     try:
-        result = await call_gemini_with_retry(gemini_model, prompt)
+        result = await call_groq_with_retry(groq_client, prompt)
         return result
     except (ValueError, AttributeError) as e:
         return {

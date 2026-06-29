@@ -82,7 +82,7 @@ async def _load_company_data(company_id: uuid.UUID, db: AsyncSession) -> dict:
 async def run_full_analysis(
     session_id: str,
     company_id: uuid.UUID,
-    gemini_model,
+    groq_client,
 ):
     queue = progress_queues.get(session_id)
 
@@ -127,7 +127,7 @@ async def run_full_analysis(
     try:
         m1_result, m2_result = await asyncio.gather(
             asyncio.to_thread(run_module1, company_data),
-            run_module2(company_data, gemini_model),
+            run_module2(company_data, groq_client),
         )
     except Exception as e:
         m1_result = {"error": str(e), "module": "M1/M2"}
@@ -145,7 +145,7 @@ async def run_full_analysis(
     try:
         m3_result = await run_module3(
             company_data, m1_result, m2_result,
-            company_data.get("competitors", []), gemini_model
+            company_data.get("competitors", []), groq_client
         )
     except Exception as e:
         m3_result = {"error": str(e), "module": "M3"}
@@ -159,7 +159,7 @@ async def run_full_analysis(
     # ── M4 ───────────────────────────────────────────────────────────────────
     try:
         m4_result = await run_module4(
-            company_data, m1_result, m2_result, m3_result, gemini_model
+            company_data, m1_result, m2_result, m3_result, groq_client
         )
     except Exception as e:
         m4_result = {"error": str(e), "module": "M4"}
@@ -188,8 +188,9 @@ async def run_full_analysis(
     pdf_path = None
     try:
         pdf_path = await asyncio.to_thread(generate_pdf, full_report, session_id)
-    except Exception:
-        pdf_path = None  # non-fatal — report still saved without PDF
+    except Exception as pdf_err:
+        print(f"PDF ERROR: {pdf_err}")
+        pdf_path = None
 
     # ── Save report to DB ─────────────────────────────────────────────────────
     final_status = "partial" if any_module_failed else "completed"
@@ -257,9 +258,9 @@ async def start_analysis(
     queue: asyncio.Queue = asyncio.Queue()
     progress_queues[str(session_id)] = queue
 
-    gemini_model = getattr(request.app.state, "gemini_model", None)
+    groq_client = getattr(request.app.state, "groq_client", None)
     asyncio.create_task(
-        run_full_analysis(str(session_id), company_id, gemini_model)
+        run_full_analysis(str(session_id), company_id, groq_client)
     )
 
     return AnalysisStartResponse(session_id=session_id)
