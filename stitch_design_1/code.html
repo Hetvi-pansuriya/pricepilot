@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --bg-base: #0f1117;
+            --surface-card: #181c27;
+            --border-muted: #2a2f45;
+            --border-hover: #3f445e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-card {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border-muted);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .login-card:hover {
+            border-color: var(--border-hover);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .input-focus-ring:focus-within {
+            border-color: #8083ff;
+            box-shadow: 0 0 0 2px rgba(128, 131, 255, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#452000",
+                        "on-background": "#e4e1ed",
+                        "surface": "#13131b",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-container-high": "#292932",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary-container": "#0d0096",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "tertiary-fixed": "#ffdcc5",
+                        "background": "#13131b",
+                        "outline": "#908fa0",
+                        "inverse-surface": "#e4e1ed",
+                        "on-surface-variant": "#c7c4d7",
+                        "secondary-fixed": "#d4e4fa",
+                        "inverse-on-surface": "#303038",
+                        "primary-fixed": "#e1e0ff",
+                        "tertiary-container": "#d97721",
+                        "inverse-primary": "#494bd6",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343d",
+                        "surface-container-low": "#1b1b23",
+                        "secondary": "#b9c8de",
+                        "primary-container": "#8083ff",
+                        "outline-variant": "#464554",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-container": "#a7b6cc",
+                        "surface-container": "#1f1f27",
+                        "on-tertiary": "#4f2500",
+                        "on-surface": "#e4e1ed",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#07006c",
+                        "on-primary": "#1000a9",
+                        "surface-container-lowest": "#0d0d15",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#34343d",
+                        "on-secondary": "#233143",
+                        "secondary-container": "#39485a",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#13131b",
+                        "primary": "#c0c1ff",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "surface-tint": "#c0c1ff",
+                        "tertiary": "#ffb783",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "surface-bright": "#393841"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "220px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "max_content_width": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen p-md">
+<!-- Ambient Background Element -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] rounded-full"></div>
+</div>
+<!-- Login Shell -->
+<main class="relative z-10 w-full max-w-[400px]">
+<!-- Error Banner (Hidden by default) -->
+<div class="hidden flex items-center gap-sm p-sm mb-md bg-error-container/20 border border-error/30 rounded-lg text-error font-body-sm text-body-sm transition-all duration-300" id="errorBanner">
+<span class="material-symbols-outlined text-[20px]" data-icon="error">error</span>
+<p>Invalid email or password. Please try again.</p>
+</div>
+<!-- Main Card -->
+<div class="login-card p-xl rounded-xl transition-all duration-300">
+<!-- Brand Identity -->
+<div class="flex flex-col items-center text-center mb-xl">
+<div class="flex items-center justify-center w-12 h-12 rounded-lg bg-primary mb-md shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-on-primary text-[28px]" data-icon="insights">insights</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs tracking-tight">PricePilot</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Know what your pricing is really worth</p>
+</div>
+<!-- Login Form -->
+<form class="space-y-lg" id="loginForm" onsubmit="return handleLogin(event)">
+<!-- Email Field -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="email">Email Address</label>
+<div class="relative input-focus-ring bg-surface-container-low border border-outline-variant rounded-lg transition-all duration-200">
+<input class="w-full bg-transparent border-none text-on-surface font-body-base text-body-base px-md py-sm focus:ring-0 placeholder:text-outline/50" id="email" placeholder="name@company.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative flex items-center input-focus-ring bg-surface-container-low border border-outline-variant rounded-lg transition-all duration-200">
+<input class="w-full bg-transparent border-none text-on-surface font-body-base text-body-base px-md py-sm focus:ring-0 placeholder:text-outline/50" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="flex items-center justify-center p-sm text-on-surface-variant hover:text-on-surface transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" data-icon="visibility" id="passwordIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me (Optional touch for Pro feel) -->
+<div class="flex items-center gap-sm">
+<input class="w-4 h-4 rounded bg-surface-container-low border-outline-variant text-primary focus:ring-primary/20" id="remember" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface-variant select-none cursor-pointer" for="remember">Stay logged in for 30 days</label>
+</div>
+<!-- Submit Action -->
+<button class="w-full py-sm bg-primary text-on-primary font-headline-sm text-headline-sm rounded-lg hover:brightness-110 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-primary/10 flex items-center justify-center gap-sm" id="loginBtn" type="submit">
+<span>Log In</span>
+</button>
+</form>
+<!-- Sign Up Redirect -->
+<div class="mt-xl pt-lg border-t border-outline-variant text-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Don't have an account? 
+                    <a class="text-primary font-medium hover:underline ml-xs" href="#">Sign up</a>
+</p>
+</div>
+</div>
+<!-- Footer Meta -->
+<div class="mt-lg flex justify-center gap-lg">
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface-variant transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-on-surface-variant transition-colors" href="#">Terms of Service</a>
+</div>
+</main>
+<script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.innerText = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.innerText = 'visibility';
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const loginBtn = document.getElementById('loginBtn');
+            const errorBanner = document.getElementById('errorBanner');
+            
+            // UI Feedback
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span>`;
+            
+            // Simulate brief delay then show error as requested ("hidden-by-default red error banner")
+            setTimeout(() => {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Log In';
+                
+                // Show Error Banner
+                errorBanner.classList.remove('hidden');
+                errorBanner.classList.add('flex');
+                
+                // Optional: shake animation on card
+                const card = document.querySelector('.login-card');
+                card.style.transform = 'translateX(-4px)';
+                setTimeout(() => card.style.transform = 'translateX(4px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(0)', 200);
+            }, 1000);
+
+            return false;
+        }
+    </script>
+</body></html>

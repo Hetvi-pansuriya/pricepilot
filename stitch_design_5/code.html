@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PricePilot | Pricing Analysis Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #13131b; }
+        ::-webkit-scrollbar-thumb { background: #2a2f45; border-radius: 10px; }
+        .glass-panel { background: rgba(27, 27, 35, 0.8); backdrop-filter: blur(8px); }
+        .border-glow-primary { border: 1px solid #c0c1ff44; box-shadow: 0 0 15px -5px #c0c1ff33; }
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #2a2f45; border-radius: 4px; }
+        input[type=range]::-webkit-slider-thumb { height: 20px; width: 20px; border-radius: 50%; background: #c0c1ff; cursor: pointer; -webkit-appearance: none; margin-top: -7px; box-shadow: 0 0 10px rgba(192, 193, 255, 0.4); }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#452000",
+                        "on-background": "#e4e1ed",
+                        "surface": "#13131b",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-container-high": "#292932",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary-container": "#0d0096",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "tertiary-fixed": "#ffdcc5",
+                        "background": "#13131b",
+                        "outline": "#908fa0",
+                        "inverse-surface": "#e4e1ed",
+                        "on-surface-variant": "#c7c4d7",
+                        "secondary-fixed": "#d4e4fa",
+                        "inverse-on-surface": "#303038",
+                        "primary-fixed": "#e1e0ff",
+                        "tertiary-container": "#d97721",
+                        "inverse-primary": "#494bd6",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343d",
+                        "surface-container-low": "#1b1b23",
+                        "secondary": "#b9c8de",
+                        "primary-container": "#8083ff",
+                        "outline-variant": "#464554",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-container": "#a7b6cc",
+                        "surface-container": "#1f1f27",
+                        "on-tertiary": "#4f2500",
+                        "on-surface": "#e4e1ed",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#07006c",
+                        "on-primary": "#1000a9",
+                        "surface-container-lowest": "#0d0d15",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#34343d",
+                        "on-secondary": "#233143",
+                        "secondary-container": "#39485a",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#13131b",
+                        "primary": "#c0c1ff",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "surface-tint": "#c0c1ff",
+                        "tertiary": "#ffb783",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "surface-bright": "#393841"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "220px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "max_content_width": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-[220px] bg-surface-container-low border-r border-outline-variant flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-xs">
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">PricePilot</h1>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">SaaS Pricing Analyzer</p>
+</div>
+<nav class="flex-grow flex flex-col gap-base">
+<a class="text-primary font-bold flex items-center gap-sm p-sm rounded-lg hover:text-on-surface transition-colors duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-base text-body-base">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-sm p-sm rounded-lg hover:text-on-surface transition-colors duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base text-body-base">Settings</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-lg">
+<a class="text-on-surface-variant flex items-center gap-sm p-sm rounded-lg hover:text-on-surface transition-colors duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base text-body-base">Log out</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 ml-[220px] max-w-[calc(1280px)]">
+<!-- TopAppBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-lg py-sm bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-xl">
+<nav class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-all duration-200" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-all duration-200" href="#">Analytics</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-label-caps text-label-caps" href="#">Pricing Models</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a SaaS female executive with short dark hair, wearing a navy blue blazer, set against a neutral, high-end office background with soft bokeh lighting. The style is clean, corporate, and minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiTA1WJzQYP6Mi0no8eeFU1YoZabVrPCIHiS483Usg07LN-XFwOWggGYuyZXq1Vy9dJqTidWA3SVlCvVazgsqAr8ZPe1R1ikQY7wm3iyrKMJlOS0770jjVxu_ZY5WanRn9DmI4hLsVRoVXCwZWfMoFDPDpDQzYmKhHnfizWnrWkcQ5crwkP-_-NT9G5LNU01Wot9Yd-Gf3h6ZHoNPYY6ELakG_JnoK7G92gg8ssVa4RR8YXIlWv334npl73gzSR2ak2j4ns9vZu_Do"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<section class="p-lg md:p-xl space-y-xl max-w-6xl mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Pricing Analysis Report</h2>
+<p class="text-on-surface-variant font-body-base mt-xs">Acme Cloud Infrastructure Series B Analysis</p>
+</div>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-caps text-label-caps flex items-center gap-sm hover:brightness-110 transition-all active:scale-95">
+<span class="material-symbols-outlined">download</span>
+                    Download PDF
+                </button>
+</div>
+<!-- Executive Summary -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg border-l-4 border-l-primary-container">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-primary text-3xl">lightbulb</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Executive Summary</h3>
+<p class="text-headline-md text-headline-md text-on-surface leading-tight">
+                            Your <span class="text-primary font-bold">Pro tier</span> is currently underpriced by <span class="text-primary font-extrabold">28%</span> compared to high-intent conversion benchmarks.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Bento Grid - Analytics Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Revenue Sensitivity Chart & Slider -->
+<div class="lg:col-span-2 bg-surface-container-low border border-outline-variant rounded-xl p-lg space-y-lg">
+<div class="flex justify-between items-center">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Revenue Sensitivity</h4>
+<div class="flex gap-md">
+<span class="flex items-center gap-xs text-[10px] uppercase font-bold text-outline"><div class="w-2 h-2 rounded-full bg-outline"></div> Current</span>
+<span class="flex items-center gap-xs text-[10px] uppercase font-bold text-primary"><div class="w-2 h-2 rounded-full bg-primary"></div> Projected (+20%)</span>
+</div>
+</div>
+<!-- Line Chart Placeholder -->
+<div class="h-64 relative w-full bg-surface-container flex items-end justify-between px-md pb-md overflow-hidden rounded-lg group">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 400 200">
+<!-- Current Line -->
+<path d="M0 160 Q 50 155, 100 150 T 200 145 T 300 140 T 400 138" fill="none" stroke="#908fa0" stroke-dasharray="4" stroke-width="2"></path>
+<!-- Projected +20% -->
+<path d="M0 160 Q 50 140, 100 130 T 200 110 T 300 95 T 400 85" fill="none" stroke="#c0c1ff" stroke-width="3"></path>
+<!-- Projected +30% -->
+<path d="M0 160 Q 50 130, 100 110 T 200 85 T 300 65 T 400 50" fill="none" opacity="0.3" stroke="#c0c1ff" stroke-width="1"></path>
+</svg>
+<div class="absolute bottom-4 left-4 text-[10px] text-outline">Q1</div>
+<div class="absolute bottom-4 right-4 text-[10px] text-outline">Q4</div>
+<!-- Tooltip Hover Simulation -->
+<div class="absolute right-1/4 top-1/4 bg-surface-container-highest p-sm border border-outline-variant rounded shadow-xl pointer-events-none group-hover:scale-105 transition-transform">
+<p class="text-[10px] font-bold text-primary">PROJECTED MRR</p>
+<p class="text-headline-sm">₹5,08,000</p>
+</div>
+</div>
+<!-- Price Slider Interaction -->
+<div class="pt-md">
+<div class="flex justify-between items-center mb-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Adjust Unit Price (Pro Tier)</label>
+<span class="font-headline-sm text-primary font-bold" id="price-display">₹2,400</span>
+</div>
+<input class="w-full" id="price-slider" max="4000" min="2000" step="100" type="range" value="2400"/>
+<div class="flex justify-between text-[10px] font-bold text-outline-variant mt-xs">
+<span>₹2,000 (Current)</span>
+<span>₹4,000 (Ceiling)</span>
+</div>
+</div>
+</div>
+<!-- MRR Callouts Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col justify-between">
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-lg">Estimated Growth</h4>
+<div class="space-y-lg">
+<div>
+<p class="text-body-sm text-on-surface-variant">Current MRR</p>
+<p class="text-display-lg text-outline-variant">₹4,60,000</p>
+</div>
+<div class="p-md rounded-lg bg-primary-container/10 border border-primary/20">
+<p class="text-body-sm text-primary">Projected MRR</p>
+<div class="flex items-baseline gap-xs">
+<p class="text-display-lg text-primary font-bold">₹5,08,000</p>
+<span class="text-primary font-bold text-body-sm">+10.4%</span>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-lg">
+<div class="flex items-center gap-sm p-sm rounded-lg bg-surface-container-high border border-outline-variant">
+<span class="material-symbols-outlined text-tertiary">trending_up</span>
+<p class="text-body-sm italic">"Pricing leverage is your highest efficiency growth lever."</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature Audit & Competitor Benchmark -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Feature Audit Table -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-lg border-b border-outline-variant">
+<h4 class="font-headline-sm text-headline-sm">Feature Value Audit</h4>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-high">
+<tr>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">Feature</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">Tier</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">Class</th>
+<th class="px-lg py-sm font-label-caps text-label-caps text-on-surface-variant">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr>
+<td class="px-lg py-md font-body-base">Custom SSL</td>
+<td class="px-lg py-md text-body-sm">Pro</td>
+<td class="px-lg py-md">
+<span class="px-sm py-xs rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">GATEKEEPER</span>
+</td>
+<td class="px-lg py-md text-body-sm text-on-surface-variant">Maintain current</td>
+</tr>
+<tr>
+<td class="px-lg py-md font-body-base">SSO Auth</td>
+<td class="px-lg py-md text-body-sm">Pro</td>
+<td class="px-lg py-md">
+<span class="px-sm py-xs rounded text-[10px] font-bold bg-error/10 text-error border border-error/20">BLOCKER</span>
+</td>
+<td class="px-lg py-md text-body-sm text-error">Move to Enterprise</td>
+</tr>
+<tr>
+<td class="px-lg py-md font-body-base">API Usage</td>
+<td class="px-lg py-md text-body-sm">Starter</td>
+<td class="px-lg py-md">
+<span class="px-sm py-xs rounded text-[10px] font-bold bg-tertiary/10 text-tertiary border border-tertiary/20">ADD-ON</span>
+</td>
+<td class="px-lg py-md text-body-sm text-on-surface-variant">Introduce limits</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Competitor Benchmark -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-lg">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-sm text-headline-sm">Competitor Benchmark</h4>
+<span class="bg-tertiary/10 text-tertiary border border-tertiary/30 px-sm py-xs rounded-full text-[10px] font-bold tracking-wider">UNDERPRICED</span>
+</div>
+<div class="grid grid-cols-2 gap-lg flex-grow">
+<div class="bg-surface-container p-md rounded-lg border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-tertiary mb-sm uppercase">Missing Features</p>
+<ul class="space-y-sm">
+<li class="flex items-start gap-xs text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-outline">close</span> 
+                                    Fine-grained RBAC
+                                </li>
+<li class="flex items-start gap-xs text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-outline">close</span> 
+                                    Regional Compliance
+                                </li>
+</ul>
+</div>
+<div class="bg-primary/5 p-md rounded-lg border border-primary/20">
+<p class="font-label-caps text-label-caps text-primary mb-sm uppercase">Unique Value</p>
+<ul class="space-y-sm">
+<li class="flex items-start gap-xs text-body-sm">
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span> 
+                                    Real-time Edge Analysis
+                                </li>
+<li class="flex items-start gap-xs text-body-sm">
+<span class="material-symbols-outlined text-sm text-primary">check_circle</span> 
+                                    Native SDK Wrappers
+                                </li>
+</ul>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-[10px] font-bold">C1</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-[10px] font-bold">C2</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-[10px] font-bold">C3</div>
+</div>
+<p class="text-body-sm text-on-surface-variant">Benchmark vs. 12 industry competitors.</p>
+</div>
+</div>
+</div>
+<!-- Alternative Strategies -->
+<div class="space-y-lg">
+<h4 class="font-headline-sm text-headline-sm">Strategic Recommendations</h4>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Conservative -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:border-outline transition-all cursor-pointer group">
+<div class="flex justify-between items-center">
+<p class="font-label-caps text-label-caps text-on-surface-variant">Conservative</p>
+<span class="text-[10px] font-bold text-on-surface-variant">LOW RISK</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="text-headline-md font-bold">+5%</span>
+<span class="text-body-sm text-on-surface-variant">MRR Δ</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Minimal friction. Standard CPI adjustment based on trailing inflation.</p>
+<div class="mt-auto pt-md flex items-center gap-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-caps font-bold">Apply Model</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<!-- Aggressive (Recommended) -->
+<div class="bg-surface-container-low border-2 border-primary rounded-xl p-lg flex flex-col gap-md relative transform scale-105 shadow-2xl shadow-primary/10 group cursor-pointer">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-sm py-xs rounded text-[10px] font-bold tracking-widest uppercase">Recommended</div>
+<div class="flex justify-between items-center">
+<p class="font-label-caps text-label-caps text-primary">Aggressive</p>
+<span class="text-[10px] font-bold text-tertiary">HIGH RISK</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="text-display-lg text-primary font-bold">+22%</span>
+<span class="text-body-sm text-primary">MRR Δ</span>
+</div>
+<p class="text-body-sm text-on-surface">Maximize extraction from top 20% users. High churn potential (Est. 4%).</p>
+<div class="mt-auto pt-md">
+<button class="w-full bg-primary text-on-primary py-sm rounded font-bold text-label-caps">Select Strategy</button>
+</div>
+</div>
+<!-- Strategic -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-md hover:border-outline transition-all cursor-pointer group">
+<div class="flex justify-between items-center">
+<p class="font-label-caps text-label-caps text-on-surface-variant">Strategic</p>
+<span class="text-[10px] font-bold text-primary">MED RISK</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="text-headline-md font-bold">+12%</span>
+<span class="text-body-sm text-on-surface-variant">MRR Δ</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Focus on tiered upsell triggers. Aligns price with feature consumption.</p>
+<div class="mt-auto pt-md flex items-center gap-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-caps font-bold">Apply Model</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer / Extra Spacing -->
+<footer class="h-20 flex items-center justify-center border-t border-outline-variant mt-xl opacity-50">
+<p class="text-[10px] uppercase font-bold tracking-widest">Powered by PricePilot Engine v2.4.1</p>
+</footer>
+</main>
+<script>
+        const slider = document.getElementById('price-slider');
+        const display = document.getElementById('price-display');
+        
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            display.textContent = `₹${parseInt(val).toLocaleString('en-IN')}`;
+            
+            // Interaction: Pulse effect on change
+            display.classList.add('scale-110');
+            setTimeout(() => display.classList.remove('scale-110'), 150);
+        });
+
+        // Add some subtle hover effects to cards via JS if needed
+        document.querySelectorAll('.bg-surface-container-low').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = '#3f445e';
+            });
+            card.addEventListener('mouseleave', () => {
+                if (!card.classList.contains('border-primary')) {
+                    card.style.borderColor = '#464554';
+                }
+            });
+        });
+    </script>
+</body></html>

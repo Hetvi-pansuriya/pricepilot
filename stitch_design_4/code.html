@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PricePilot - Company Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #13131b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2f45;
+            border-radius: 10px;
+        }
+        .step-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#452000",
+                        "on-background": "#e4e1ed",
+                        "surface": "#13131b",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-container-high": "#292932",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-primary-container": "#0d0096",
+                        "on-secondary-fixed": "#0d1c2d",
+                        "on-secondary-fixed-variant": "#39485a",
+                        "tertiary-fixed": "#ffdcc5",
+                        "background": "#13131b",
+                        "outline": "#908fa0",
+                        "inverse-surface": "#e4e1ed",
+                        "on-surface-variant": "#c7c4d7",
+                        "secondary-fixed": "#d4e4fa",
+                        "inverse-on-surface": "#303038",
+                        "primary-fixed": "#e1e0ff",
+                        "tertiary-container": "#d97721",
+                        "inverse-primary": "#494bd6",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "error-container": "#93000a",
+                        "surface-container-highest": "#34343d",
+                        "surface-container-low": "#1b1b23",
+                        "secondary": "#b9c8de",
+                        "primary-container": "#8083ff",
+                        "outline-variant": "#464554",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-container": "#a7b6cc",
+                        "surface-container": "#1f1f27",
+                        "on-tertiary": "#4f2500",
+                        "on-surface": "#e4e1ed",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#07006c",
+                        "on-primary": "#1000a9",
+                        "surface-container-lowest": "#0d0d15",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#34343d",
+                        "on-secondary": "#233143",
+                        "secondary-container": "#39485a",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#13131b",
+                        "primary": "#c0c1ff",
+                        "secondary-fixed-dim": "#b9c8de",
+                        "surface-tint": "#c0c1ff",
+                        "tertiary": "#ffb783",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "surface-bright": "#393841"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar_width": "220px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "max_content_width": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-base overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[220px] bg-surface-container-low border-r border-outline-variant flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[32px]">insights</span>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">PricePilot</h1>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">SaaS Analyzer</p>
+</div>
+</div>
+<nav class="flex-grow space-y-xs">
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-primary font-bold transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant hover:text-on-surface transition-colors duration-200 group active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base">Settings</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-lg">
+<a class="flex items-center gap-md py-sm px-md rounded-lg text-on-surface-variant hover:text-on-surface transition-colors duration-200 active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base">Log out</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 left-[220px] right-0 h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-lg z-40">
+<div class="flex items-center gap-xl">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Company Setup</h2>
+<nav class="hidden md:flex gap-lg items-center">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all duration-200" href="#">Dashboard</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-all duration-200" href="#">Analytics</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1 transition-all duration-200" href="#">Pricing Models</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface p-2">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface p-2">help_outline</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional user profile avatar for a tech entrepreneur, showing a high-resolution, stylized 3D render of a person with glasses, set against a deep indigo and dark charcoal background. The lighting is dramatic and moody, reflecting a high-end SaaS software environment with subtle glowing accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIR2pX_X2JeIy3zPcPHBaAg-T2Q1jCnj0DmzrJUZiKpolePGrZfVucZj-hLjaF6tWZ6KPPz51WbSdaKHTqc0xevDqwTJbfKeNcWDnrZd3mzE6aH4JE340EDYITxbiVy_4HwrfXjmBHua-v5U0Sa4X7-wL65-KrOvpIQ8SWC6WqD35hFPG8BlDC4BPMfC6RuNkWjfwwK6frJYqnhFdqX-C8oxTv5Vob48F0EkB6gBcRMplEgjRReutJvencISnaYyy5XS_yvws9I3Vl"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[220px] mt-16 p-xl h-[calc(100vh-64px)] overflow-y-auto">
+<div class="max-w-[1280px] mx-auto">
+<!-- Wizard Header & Step Indicator -->
+<div class="mb-xl flex flex-col items-center">
+<div class="w-full max-w-2xl flex items-center justify-between relative mb-4">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -z-10 -translate-y-1/2"></div>
+<!-- Step 1 Indicator -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-on-primary bg-primary border-2 border-primary transition-all duration-300" id="step-1-indicator">1</div>
+<span class="font-label-caps text-label-caps text-primary">Basic Info</span>
+</div>
+<!-- Step 2 Indicator -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-on-surface-variant bg-surface-container-high border-2 border-outline-variant transition-all duration-300" id="step-2-indicator">2</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Tiers &amp; Features</span>
+</div>
+<!-- Step 3 Indicator -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-on-surface-variant bg-surface-container-high border-2 border-outline-variant transition-all duration-300" id="step-3-indicator">3</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Competitors</span>
+</div>
+</div>
+</div>
+<!-- Wizard Containers -->
+<div class="relative" id="wizard-content">
+<!-- Step 1: Basic Info -->
+<div class="step-transition opacity-100 block" id="step-1">
+<div class="max-w-xl mx-auto bg-surface-container-low border border-outline-variant rounded-xl p-xl">
+<h3 class="font-headline-md text-headline-md mb-lg">Tell us about your SaaS</h3>
+<div class="space-y-lg">
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Company Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="e.g. Acme Analytics" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Industry</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+<option>FinTech</option>
+<option>Marketing Tech</option>
+<option>Infrastructure/DevOps</option>
+<option>Healthcare</option>
+<option>E-commerce</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Description</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Briefly describe your product and value proposition..." rows="4"></textarea>
+</div>
+<div class="pt-md">
+<button class="w-full py-lg bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all" onclick="goToStep(2)">
+                                    Next <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2: Tiers & Features -->
+<div class="step-transition opacity-0 hidden" id="step-2">
+<div class="max-w-4xl mx-auto space-y-lg">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-headline-md">Pricing Tiers</h3>
+<button class="py-sm px-lg border border-outline-variant rounded-lg flex items-center gap-2 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">add</span> Add Tier
+                            </button>
+</div>
+<!-- Tier Cards -->
+<div class="grid grid-cols-1 gap-md">
+<!-- Tier: Free -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col md:flex-row gap-lg">
+<div class="flex-grow space-y-md">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="text" value="Free"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Price (₹)</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="text" value="0"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Billing</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+<option>Monthly</option>
+<option>Annual</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Users</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="number" value="3"/>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="inline-flex items-center gap-1 py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+                                            Core Reports <button class="material-symbols-outlined text-[14px]">close</button>
+</span>
+<span class="inline-flex items-center gap-1 py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+                                            1 Dashboard <button class="material-symbols-outlined text-[14px]">close</button>
+</span>
+<button class="inline-flex items-center gap-1 py-1 px-3 border border-dashed border-outline-variant rounded-full text-xs hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Feature
+                                        </button>
+</div>
+</div>
+<div class="w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col justify-center items-center gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Churn %</label>
+<span class="text-headline-sm font-bold text-error">12%</span>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-all">delete</button>
+</div>
+</div>
+<!-- Tier: Pro -->
+<div class="bg-surface-container-low border border-primary rounded-xl p-lg flex flex-col md:flex-row gap-lg relative">
+<div class="absolute -top-3 left-4 bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Most Popular</div>
+<div class="flex-grow space-y-md">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="text" value="Pro"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Price (₹)</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="text" value="4,999"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Billing</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Monthly</option>
+<option>Annual</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Users</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-sm focus:ring-1 focus:ring-primary outline-none" type="number" value="20"/>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="inline-flex items-center gap-1 py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+                                            Unlimited Reports <button class="material-symbols-outlined text-[14px]">close</button>
+</span>
+<span class="inline-flex items-center gap-1 py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+                                            Custom CSS <button class="material-symbols-outlined text-[14px]">close</button>
+</span>
+<span class="inline-flex items-center gap-1 py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+                                            Priority Support <button class="material-symbols-outlined text-[14px]">close</button>
+</span>
+<button class="inline-flex items-center gap-1 py-1 px-3 border border-dashed border-outline-variant rounded-full text-xs hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Feature
+                                        </button>
+</div>
+</div>
+<div class="w-px bg-outline-variant hidden md:block"></div>
+<div class="flex flex-col justify-center items-center gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Churn %</label>
+<span class="text-headline-sm font-bold text-tertiary">4.5%</span>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-all">delete</button>
+</div>
+</div>
+</div>
+<div class="pt-lg flex gap-md">
+<button class="flex-1 py-md border border-outline-variant rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-high active:scale-95 transition-all" onclick="goToStep(1)">
+<span class="material-symbols-outlined">arrow_back</span> Back
+                            </button>
+<button class="flex-[2] py-md bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all" onclick="goToStep(3)">
+                                Next <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Step 3: Competitors -->
+<div class="step-transition opacity-0 hidden" id="step-3">
+<div class="max-w-2xl mx-auto bg-surface-container-low border border-outline-variant rounded-xl p-xl">
+<h3 class="font-headline-md text-headline-md mb-lg">Benchmark Competitors</h3>
+<p class="text-on-surface-variant mb-lg font-body-sm">We'll fetch pricing data from these URLs to compare with your tiers.</p>
+<div class="space-y-md mb-xl">
+<!-- Competitor 1 -->
+<div class="flex gap-md items-center group">
+<div class="flex-grow">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary outline-none" placeholder="https://competitor1.com/pricing" type="text"/>
+</div>
+<button class="px-lg py-md bg-surface-container-highest border border-outline-variant rounded-lg text-sm font-bold hover:bg-surface-bright transition-all flex items-center gap-2">
+                                    Fetch <span class="material-symbols-outlined text-sm">sync</span>
+</button>
+<div class="flex items-center gap-1 px-3 py-1.5 bg-green-900/20 text-green-400 rounded-full text-xs font-bold border border-green-500/20">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">check_circle</span> Success
+                                </div>
+</div>
+<!-- Competitor 2 -->
+<div class="flex gap-md items-center group">
+<div class="flex-grow">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary outline-none" placeholder="https://competitor2.io/pricing" type="text"/>
+</div>
+<button class="px-lg py-md bg-surface-container-highest border border-outline-variant rounded-lg text-sm font-bold hover:bg-surface-bright transition-all flex items-center gap-2">
+                                    Fetch <span class="material-symbols-outlined text-sm">sync</span>
+</button>
+<div class="flex items-center gap-1 px-3 py-1.5 bg-amber-900/20 text-amber-400 rounded-full text-xs font-bold border border-amber-500/20">
+<span class="material-symbols-outlined text-xs animate-spin">autorenew</span> Pending
+                                </div>
+</div>
+<!-- Empty Slots -->
+<div class="flex gap-md items-center">
+<div class="flex-grow">
+<input class="w-full bg-surface-container-lowest border border-outline-variant border-dashed rounded-lg p-md focus:ring-2 focus:ring-primary outline-none" placeholder="Add Competitor URL..." type="text"/>
+</div>
+<button class="px-lg py-md opacity-50 cursor-not-allowed bg-surface-container-highest border border-outline-variant rounded-lg text-sm font-bold">
+                                    Fetch
+                                </button>
+</div>
+</div>
+<div class="pt-md flex gap-md">
+<button class="flex-1 py-lg border border-outline-variant rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-high active:scale-95 transition-all" onclick="goToStep(2)">
+<span class="material-symbols-outlined">arrow_back</span> Back
+                            </button>
+<button class="flex-[3] py-lg bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(192,193,255,0.3)]" onclick="runAnalysis()">
+                                Finish Setup &amp; Run Analysis <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Analysis Loading Overlay (Hidden by Default) -->
+<div class="fixed inset-0 bg-background/90 z-[100] hidden flex flex-col items-center justify-center p-xl text-center" id="analysis-overlay">
+<div class="w-full max-w-md space-y-xl">
+
+<div>
+<h2 class="font-display-lg text-display-lg mb-md">Analyzing Market Dynamics</h2>
+<p class="text-on-surface-variant font-body-base">PricePilot is cross-referencing your tiers against competitor benchmarks and industry churn averages.</p>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/3 animate-[progress_3s_infinite_linear]"></div>
+</div>
+<div class="flex justify-center gap-lg">
+<div class="flex items-center gap-2 text-label-caps font-bold text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">data_usage</span> Parsing HTML
+                </div>
+<div class="flex items-center gap-2 text-label-caps font-bold text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">psychology</span> Running Models
+                </div>
+</div>
+</div>
+</div>
+<style>
+        @keyframes progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+    </style>
+<script>
+        function goToStep(stepNumber) {
+            // Hide all steps
+            const steps = [1, 2, 3];
+            steps.forEach(s => {
+                const element = document.getElementById(`step-${s}`);
+                element.classList.add('hidden', 'opacity-0');
+                element.classList.remove('block', 'opacity-100');
+                
+                // Update indicator styles
+                const indicator = document.getElementById(`step-${s}-indicator`);
+                const label = indicator.nextElementSibling;
+                
+                if (s < stepNumber) {
+                    // Completed state
+                    indicator.classList.remove('bg-primary', 'text-on-primary', 'border-primary', 'bg-surface-container-high', 'text-on-surface-variant', 'border-outline-variant');
+                    indicator.classList.add('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+                    indicator.innerHTML = '<span class="material-symbols-outlined text-sm" style="font-variation-settings: \'FILL\' 1;">check</span>';
+                    label.classList.remove('text-primary');
+                    label.classList.add('text-on-surface-variant');
+                } else if (s === stepNumber) {
+                    // Active state
+                    indicator.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-primary-container', 'bg-surface-container-high', 'text-on-surface-variant', 'border-outline-variant');
+                    indicator.classList.add('bg-primary', 'text-on-primary', 'border-primary');
+                    indicator.textContent = s;
+                    label.classList.add('text-primary');
+                    label.classList.remove('text-on-surface-variant');
+                } else {
+                    // Future state
+                    indicator.classList.remove('bg-primary', 'text-on-primary', 'border-primary', 'bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+                    indicator.classList.add('bg-surface-container-high', 'text-on-surface-variant', 'border-outline-variant');
+                    indicator.textContent = s;
+                    label.classList.remove('text-primary');
+                    label.classList.add('text-on-surface-variant');
+                }
+            });
+
+            // Show active step
+            const activeStep = document.getElementById(`step-${stepNumber}`);
+            activeStep.classList.remove('hidden');
+            setTimeout(() => {
+                activeStep.classList.remove('opacity-0');
+                activeStep.classList.add('opacity-100');
+            }, 50);
+
+            // Scroll main content to top
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function runAnalysis() {
+            const overlay = document.getElementById('analysis-overlay');
+            overlay.classList.remove('hidden');
+            
+            // Simulating analysis completion after 4 seconds
+            setTimeout(() => {
+                alert('Analysis complete! Redirecting to pricing optimization dashboard.');
+                overlay.classList.add('hidden');
+            }, 4000);
+        }
+    </script>
+</body></html>
