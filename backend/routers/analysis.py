@@ -219,6 +219,40 @@ async def run_full_analysis(
 
     await push(100, final_status, report_id=str(report_id))
 
+    # Email is intentionally non-fatal: analysis remains complete if delivery fails.
+    try:
+        from email_service import send_analysis_complete_email
+
+        async with AsyncSessionLocal() as db:
+            session_result = await db.execute(
+                select(AnalysisSession)
+                .where(AnalysisSession.id == uuid.UUID(session_id))
+                .options(selectinload(AnalysisSession.company))
+            )
+            session_for_email = session_result.scalar_one_or_none()
+            if session_for_email:
+                user_result = await db.execute(
+                    select(User).where(
+                        User.id == session_for_email.company.user_id
+                    )
+                )
+                user_for_email = user_result.scalar_one_or_none()
+                if user_for_email:
+                    module1 = full_report.get("module1_revenue", {})
+                    await send_analysis_complete_email(
+                        to_email=user_for_email.email,
+                        company_name=company_data["name"],
+                        company_id=company_data["id"],
+                        session_id=session_id,
+                        pdf_path=pdf_path,
+                        current_mrr=module1.get("current_mrr", 0),
+                        recommended_increase=module1.get(
+                            "recommended_increase", "N/A"
+                        ),
+                    )
+    except Exception as email_error:
+        print(f"[Email] Non-fatal notification error: {email_error}")
+
     # Clean up queue
     if session_id in progress_queues:
         del progress_queues[session_id]
@@ -404,6 +438,7 @@ async def analysis_history(
             AnalysisHistoryItem(
                 session_id=sess.id,
                 status=sess.status,
+                progress=sess.progress,
                 started_at=sess.started_at,
                 completed_at=sess.completed_at,
                 report_id=sess.report.id if sess.report else None,

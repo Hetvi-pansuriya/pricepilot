@@ -8,6 +8,7 @@ Default model: llama3-70b-8192 (fast, accurate, great for structured JSON output
 import asyncio
 import json
 import re
+import os
 
 # Groq model to use — change here to switch model globally
 # llama-3.3-70b-versatile is the recommended replacement for the deprecated llama3-70b-8192
@@ -31,7 +32,7 @@ async def call_groq_with_retry(client, prompt: str, max_retries: int = 3) -> dic
             # Groq SDK is synchronous — run in a thread so we don't block the event loop
             response = await asyncio.to_thread(
                 client.chat.completions.create,
-                model=GROQ_MODEL,
+                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                 messages=[
                     {
                         "role": "system",

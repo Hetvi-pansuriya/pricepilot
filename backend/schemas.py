@@ -132,6 +132,7 @@ class ReportResponse(BaseModel):
 class AnalysisHistoryItem(BaseModel):
     session_id: uuid.UUID
     status: str
+    progress: int
     started_at: datetime
     completed_at: Optional[datetime]
     report_id: Optional[uuid.UUID]
