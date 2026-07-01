@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 
 # Explicitly point at the .env file in the same directory as this script
 # This ensures it works whether uvicorn is launched from this dir or another
-load_dotenv()
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
