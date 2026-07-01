@@ -1,1 +1,67 @@
-import {useState} from 'react';import Card from '../common/Card';import Badge from '../common/Badge';import Button from '../common/Button';export default function StrategyCard({strategy,recommended}){const [more,setMore]=useState(false),[steps,setSteps]=useState(false);return <Card glow={recommended} className={`strategy stack ${recommended?'recommended':''}`}><div className="row-between"><h2>{strategy.name}</h2><Badge variant={strategy.risk_level==='low'?'success':strategy.risk_level==='medium'?'warning':'danger'}>{strategy.risk_level} risk</Badge></div>{recommended&&<Badge variant="info">★ Recommended</Badge>}<strong className={strategy.predicted_mrr_change_pct>=0?'metric success':'metric danger'}>{strategy.predicted_mrr_change_pct>=0?'+':''}{strategy.predicted_mrr_change_pct}%</strong><p className={more?'':'clamp'}>{strategy.reasoning}</p><Button variant="ghost" size="sm" onClick={()=>setMore(!more)}>{more?'Show less':'Show more'}</Button><div className="table-wrap"><table><tbody>{(strategy.new_tier_structure||[]).map((t,i)=><tr key={i}><td>{t.name}</td><td>${t.price}</td><td>{t.target_customer}</td></tr>)}</tbody></table></div><Button variant="secondary" onClick={()=>setSteps(!steps)}>Implementation Steps</Button>{steps&&<ol>{(strategy.implementation_steps||[]).map(x=><li key={x}>{x}</li>)}</ol>}</Card>}
+import { useState } from "react";
+import Card from "../common/Card";
+import Badge from "../common/Badge";
+import Button from "../common/Button";
+export default function StrategyCard({ strategy, recommended }) {
+  const [more, setMore] = useState(false),
+    [steps, setSteps] = useState(false);
+  return (
+    <Card
+      glow={recommended}
+      className={`strategy stack ${recommended ? "recommended" : ""}`}
+    >
+      <div className="row-between">
+        <h2>{strategy.name}</h2>
+        <Badge
+          variant={
+            strategy.risk_level === "low"
+              ? "success"
+              : strategy.risk_level === "medium"
+                ? "warning"
+                : "danger"
+          }
+        >
+          {strategy.risk_level} risk
+        </Badge>
+      </div>
+      {recommended && <Badge variant="info">★ Recommended</Badge>}
+      <strong
+        className={
+          strategy.predicted_mrr_change_pct >= 0
+            ? "metric success"
+            : "metric danger"
+        }
+      >
+        {strategy.predicted_mrr_change_pct >= 0 ? "+" : ""}
+        {strategy.predicted_mrr_change_pct}%
+      </strong>
+      <p className={more ? "" : "clamp"}>{strategy.reasoning}</p>
+      <Button variant="ghost" size="sm" onClick={() => setMore(!more)}>
+        {more ? "Show less" : "Show more"}
+      </Button>
+      <div className="table-wrap">
+        <table>
+          <tbody>
+            {(strategy.new_tier_structure || []).map((t, i) => (
+              <tr key={i}>
+                <td>{t.name}</td>
+                <td>${t.price}</td>
+                <td>{t.target_customer}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Button variant="secondary" onClick={() => setSteps(!steps)}>
+        Implementation Steps
+      </Button>
+      {steps && (
+        <ol>
+          {(strategy.implementation_steps || []).map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ol>
+      )}
+    </Card>
+  );
+}

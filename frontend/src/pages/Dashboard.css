@@ -1,1 +1,25 @@
-.company-card{border-left:var(--border-accent) solid var(--color-primary)}.company-card[data-industry="analytics"]{border-left-color:var(--color-info)}.company-card[data-industry="hr_software"]{border-left-color:var(--color-success)}.skeleton{height:calc(var(--space-8)*2);background:linear-gradient(90deg,var(--color-surface),var(--color-surface-2),var(--color-surface));background-size:200% 100%;animation:shimmer 1.5s infinite}@keyframes shimmer{to{background-position:-200% 0}}
+.company-card {
+  border-left: var(--border-accent) solid var(--color-primary);
+}
+.company-card[data-industry="analytics"] {
+  border-left-color: var(--color-info);
+}
+.company-card[data-industry="hr_software"] {
+  border-left-color: var(--color-success);
+}
+.skeleton {
+  height: calc(var(--space-8) * 2);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface),
+    var(--color-surface-2),
+    var(--color-surface)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

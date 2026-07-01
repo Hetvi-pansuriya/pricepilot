@@ -1,1 +1,13 @@
-export default function Input({label,hint,error,...p}){return <div className="form-field"><label htmlFor={p.name}>{label}{p.required?' *':''}</label><input id={p.name} {...p}/>{hint&&<span className="hint">{hint}</span>}{error&&<span className="field-error">{error}</span>}</div>}
+export default function Input({ label, hint, error, ...p }) {
+  return (
+    <div className="form-field">
+      <label htmlFor={p.name}>
+        {label}
+        {p.required ? " *" : ""}
+      </label>
+      <input id={p.name} {...p} />
+      {hint && <span className="hint">{hint}</span>}
+      {error && <span className="field-error">{error}</span>}
+    </div>
+  );
+}

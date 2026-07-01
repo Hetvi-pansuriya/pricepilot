@@ -1,2 +1,43 @@
-import {useEffect,useState} from 'react';
-export default function usePolling(fetchFn,conditionFn,interval=3000,timeout=120000){const [data,setData]=useState();const [error,setError]=useState();const [timedOut,setTimedOut]=useState(false);useEffect(()=>{let active=true,iv,to;const run=async()=>{try{const d=await fetchFn();if(!active)return;setData(d);if(conditionFn(d)){clearInterval(iv);clearTimeout(to)}}catch(e){if(active)setError(e)}};run();iv=setInterval(run,interval);to=setTimeout(()=>{if(active){setTimedOut(true);clearInterval(iv)}},timeout);return()=>{active=false;clearInterval(iv);clearTimeout(to)}},[fetchFn,conditionFn,interval,timeout]);return{data,error,timedOut}}
+import { useEffect, useState } from "react";
+export default function usePolling(
+  fetchFn,
+  conditionFn,
+  interval = 3000,
+  timeout = 120000,
+) {
+  const [data, setData] = useState();
+  const [error, setError] = useState();
+  const [timedOut, setTimedOut] = useState(false);
+  useEffect(() => {
+    let active = true,
+      iv,
+      to;
+    const run = async () => {
+      try {
+        const d = await fetchFn();
+        if (!active) return;
+        setData(d);
+        if (conditionFn(d)) {
+          clearInterval(iv);
+          clearTimeout(to);
+        }
+      } catch (e) {
+        if (active) setError(e);
+      }
+    };
+    run();
+    iv = setInterval(run, interval);
+    to = setTimeout(() => {
+      if (active) {
+        setTimedOut(true);
+        clearInterval(iv);
+      }
+    }, timeout);
+    return () => {
+      active = false;
+      clearInterval(iv);
+      clearTimeout(to);
+    };
+  }, [fetchFn, conditionFn, interval, timeout]);
+  return { data, error, timedOut };
+}

@@ -1,1 +1,37 @@
-.waiting{min-height:calc(100vh - var(--topbar-height));display:grid;place-items:center}.waiting-card{max-width:var(--auth-width);width:100%}.orb{width:var(--orb-size);height:var(--orb-size);margin:auto;border-radius:var(--radius-full);background:var(--color-primary-dim);border:var(--border-accent) solid var(--color-primary);box-shadow:var(--shadow-glow);animation:orb 1.6s ease-in-out infinite}.progress-item{padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-surface-2);opacity:.45;transition:var(--transition)}.progress-item.lit{opacity:1;transform:translateX(var(--space-1));color:var(--color-success)}@keyframes orb{50%{transform:scale(1.08);box-shadow:0 0 var(--space-8) var(--color-primary-glow)}}
+.waiting {
+  min-height: calc(100vh - var(--topbar-height));
+  display: grid;
+  place-items: center;
+}
+.waiting-card {
+  max-width: var(--auth-width);
+  width: 100%;
+}
+.orb {
+  width: var(--orb-size);
+  height: var(--orb-size);
+  margin: auto;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-dim);
+  border: var(--border-accent) solid var(--color-primary);
+  box-shadow: var(--shadow-glow);
+  animation: orb 1.6s ease-in-out infinite;
+}
+.progress-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  opacity: 0.45;
+  transition: var(--transition);
+}
+.progress-item.lit {
+  opacity: 1;
+  transform: translateX(var(--space-1));
+  color: var(--color-success);
+}
+@keyframes orb {
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 var(--space-8) var(--color-primary-glow);
+  }
+}

@@ -1,3 +1,98 @@
-import {useCallback,useEffect,useMemo,useState} from 'react';import {useNavigate,useParams} from 'react-router-dom';import {getHistory,startAnalysis} from '../api/analysis';import usePolling from '../hooks/usePolling';import Card from '../components/common/Card';import Button from '../components/common/Button';import ErrorBanner from '../components/common/ErrorBanner';import './AnalysisWaiting.css';
-const labels=['💰 Calculating revenue scenarios','🔍 Auditing feature placement','📊 Benchmarking competitors','⚡ Generating recommendations'];
-export default function AnalysisWaiting(){const {companyId,sessionId}=useParams(),n=useNavigate(),[activeId,setActiveId]=useState(sessionId);const fetchFn=useCallback(()=>getHistory(companyId),[companyId,activeId]);const stop=useCallback(rows=>['completed','partial','failed'].includes(rows.find(x=>x.session_id===activeId)?.status),[activeId]);const {data=[],error,timedOut}=usePolling(fetchFn,stop);const current=useMemo(()=>data.find(x=>x.session_id===activeId),[data,activeId]);const done=['completed','partial'].includes(current?.status),failed=current?.status==='failed',lit=done?4:current?.status==='running'?2:0;useEffect(()=>{if(done&&current){const timer=setTimeout(()=>n(`/company/${companyId}/report/${current.session_id}`),1200);return()=>clearTimeout(timer)}},[done,current,companyId,n]);return <main className="page-container waiting"><Card glow className="waiting-card stack-lg"><div className="orb"/><div><h1>{done?'Analysis complete!':failed?'Analysis failed':'Analyzing your pricing strategy...'}</h1><p>Usually takes 20–30 seconds. Powered by Gemini AI</p></div><ErrorBanner message={error?.detail||(timedOut?'Analysis is taking longer than expected. The server may be waking up.': '')}/><div className="stack-sm">{labels.map((x,i)=><div key={x} className={`progress-item ${i<lit?'lit':''}`}>{i<lit?'✓ ':''}{x}</div>)}</div>{(failed||timedOut)&&<div className="row"><Button onClick={async()=>{const s=await startAnalysis(companyId);setActiveId(s.session_id)}}>↻ Retry Analysis</Button><Button variant="secondary" onClick={()=>n(`/company/${companyId}/setup`)}>Back to Setup</Button></div>}</Card></main>}
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getHistory, startAnalysis } from "../api/analysis";
+import usePolling from "../hooks/usePolling";
+import Card from "../components/common/Card";
+import Button from "../components/common/Button";
+import ErrorBanner from "../components/common/ErrorBanner";
+import "./AnalysisWaiting.css";
+const labels = [
+  "💰 Calculating revenue scenarios",
+  "🔍 Auditing feature placement",
+  "📊 Benchmarking competitors",
+  "⚡ Generating recommendations",
+];
+export default function AnalysisWaiting() {
+  const { companyId, sessionId } = useParams(),
+    n = useNavigate(),
+    [activeId, setActiveId] = useState(sessionId);
+  const fetchFn = useCallback(
+    () => getHistory(companyId),
+    [companyId, activeId],
+  );
+  const stop = useCallback(
+    (rows) =>
+      ["completed", "partial", "failed"].includes(
+        rows.find((x) => x.session_id === activeId)?.status,
+      ),
+    [activeId],
+  );
+  const { data = [], error, timedOut } = usePolling(fetchFn, stop);
+  const current = useMemo(
+    () => data.find((x) => x.session_id === activeId),
+    [data, activeId],
+  );
+  const done = ["completed", "partial"].includes(current?.status),
+    failed = current?.status === "failed",
+    lit = done ? 4 : current?.status === "running" ? 2 : 0;
+  useEffect(() => {
+    if (done && current) {
+      const timer = setTimeout(
+        () => n(`/company/${companyId}/report/${current.session_id}`),
+        1200,
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [done, current, companyId, n]);
+  return (
+    <main className="page-container waiting">
+      <Card glow className="waiting-card stack-lg">
+        <div className="orb" />
+        <div>
+          <h1>
+            {done
+              ? "Analysis complete!"
+              : failed
+                ? "Analysis failed"
+                : "Analyzing your pricing strategy..."}
+          </h1>
+          <p>Usually takes 20–30 seconds. Powered by Gemini AI</p>
+        </div>
+        <ErrorBanner
+          message={
+            error?.detail ||
+            (timedOut
+              ? "Analysis is taking longer than expected. The server may be waking up."
+              : "")
+          }
+        />
+        <div className="stack-sm">
+          {labels.map((x, i) => (
+            <div key={x} className={`progress-item ${i < lit ? "lit" : ""}`}>
+              {i < lit ? "✓ " : ""}
+              {x}
+            </div>
+          ))}
+        </div>
+        {(failed || timedOut) && (
+          <div className="row">
+            <Button
+              onClick={async () => {
+                const s = await startAnalysis(companyId);
+                setActiveId(s.session_id);
+              }}
+            >
+              ↻ Retry Analysis
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => n(`/company/${companyId}/setup`)}
+            >
+              Back to Setup
+            </Button>
+          </div>
+        )}
+      </Card>
+    </main>
+  );
+}

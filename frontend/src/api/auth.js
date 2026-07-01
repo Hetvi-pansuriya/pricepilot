@@ -1,1 +1,5 @@
-import c from './client';export const login=(email,password)=>c.post('/auth/login',{email,password}).then(r=>r.data);export const signup=(email,password)=>c.post('/auth/signup',{email,password}).then(r=>r.data);
+import c from "./client";
+export const login = (email, password) =>
+  c.post("/auth/login", { email, password }).then((r) => r.data);
+export const signup = (email, password) =>
+  c.post("/auth/signup", { email, password }).then((r) => r.data);

@@ -1,2 +1,90 @@
-import {useEffect,useState} from 'react';import {useNavigate} from 'react-router-dom';import {listCompanies,deleteCompany} from '../api/companies';import Card from '../components/common/Card';import Button from '../components/common/Button';import Badge from '../components/common/Badge';import ErrorBanner from '../components/common/ErrorBanner';import EmptyState from '../components/common/EmptyState';import './Dashboard.css';
-export default function Dashboard(){const [items,setItems]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),n=useNavigate();useEffect(()=>{listCompanies().then(setItems).catch(e=>setError(e.detail)).finally(()=>setLoading(false))},[]);return <main className="page-container stack-lg"><div className="row-between"><div><h1>Your Companies</h1><p>Manage pricing models and analysis.</p></div><Button onClick={()=>n('/company/new/setup')}>+ New Company</Button></div><ErrorBanner message={error}/>{loading?<div className="grid-auto">{[1,2,3].map(x=><div className="card skeleton" key={x}/>)}</div>:items.length?<div className="grid-auto">{items.map(c=><Card key={c.id} className="company-card stack" onClick={()=>n(`/company/${c.id}/setup`)}><div className="row-between"><h2>{c.name}</h2><Badge variant="info">{c.industry?.replaceAll('_',' ')}</Badge></div><p>Created {new Date(c.created_at).toLocaleDateString()}</p><div className="row"><Button size="sm">Open →</Button><Button size="sm" variant="ghost" onClick={e=>{e.stopPropagation();n(`/company/${c.id}/history`)}}>History</Button><Button size="sm" variant="danger" onClick={async e=>{e.stopPropagation();if(confirm(`Delete ${c.name}?`)){await deleteCompany(c.id);setItems(v=>v.filter(x=>x.id!==c.id))}}}>×</Button></div></Card>)}</div>:<EmptyState icon="◇" title="No companies yet" description="Add your first company to uncover its pricing potential." actionLabel="+ New Company" onAction={()=>n('/company/new/setup')}/>}</main>}
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { listCompanies, deleteCompany } from "../api/companies";
+import Card from "../components/common/Card";
+import Button from "../components/common/Button";
+import Badge from "../components/common/Badge";
+import ErrorBanner from "../components/common/ErrorBanner";
+import EmptyState from "../components/common/EmptyState";
+import "./Dashboard.css";
+export default function Dashboard() {
+  const [items, setItems] = useState([]),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    n = useNavigate();
+  useEffect(() => {
+    listCompanies()
+      .then(setItems)
+      .catch((e) => setError(e.detail))
+      .finally(() => setLoading(false));
+  }, []);
+  return (
+    <main className="page-container stack-lg">
+      <div className="row-between">
+        <div>
+          <h1>Your Companies</h1>
+          <p>Manage pricing models and analysis.</p>
+        </div>
+        <Button onClick={() => n("/company/new/setup")}>+ New Company</Button>
+      </div>
+      <ErrorBanner message={error} />
+      {loading ? (
+        <div className="grid-auto">
+          {[1, 2, 3].map((x) => (
+            <div className="card skeleton" key={x} />
+          ))}
+        </div>
+      ) : items.length ? (
+        <div className="grid-auto">
+          {items.map((c) => (
+            <Card
+              key={c.id}
+              className="company-card stack"
+              onClick={() => n(`/company/${c.id}/setup`)}
+            >
+              <div className="row-between">
+                <h2>{c.name}</h2>
+                <Badge variant="info">{c.industry?.replaceAll("_", " ")}</Badge>
+              </div>
+              <p>Created {new Date(c.created_at).toLocaleDateString()}</p>
+              <div className="row">
+                <Button size="sm">Open →</Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    n(`/company/${c.id}/history`);
+                  }}
+                >
+                  History
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete ${c.name}?`)) {
+                      await deleteCompany(c.id);
+                      setItems((v) => v.filter((x) => x.id !== c.id));
+                    }
+                  }}
+                >
+                  ×
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon="◇"
+          title="No companies yet"
+          description="Add your first company to uncover its pricing potential."
+          actionLabel="+ New Company"
+          onAction={() => n("/company/new/setup")}
+        />
+      )}
+    </main>
+  );
+}
