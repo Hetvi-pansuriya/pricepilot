@@ -1,15 +1,1 @@
-import client from './client';
-
-export async function addFeature(companyId, tierId, data) {
-  const res = await client.post(`/companies/${companyId}/tiers/${tierId}/features`, data);
-  return res.data;
-}
-
-export async function addFeaturesBulk(companyId, tierId, features) {
-  const res = await client.post(`/companies/${companyId}/tiers/${tierId}/features/bulk`, { features });
-  return res.data;
-}
-
-export async function deleteFeature(companyId, tierId, featureId) {
-  await client.delete(`/companies/${companyId}/tiers/${tierId}/features/${featureId}`);
-}
+import c from './client';export const addFeature=(id,tid,d)=>c.post(`/companies/${id}/tiers/${tid}/features`,d).then(r=>r.data);export const addFeaturesBulk=(id,tid,features)=>c.post(`/companies/${id}/tiers/${tid}/features/bulk`,{features}).then(r=>r.data);export const deleteFeature=(id,tid,fid)=>c.delete(`/companies/${id}/tiers/${tid}/features/${fid}`);

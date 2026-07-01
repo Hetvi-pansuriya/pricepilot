@@ -1,10 +1,1 @@
-import '../../styles/components.css';
-
-export default function Spinner({ message }) {
-  return (
-    <div className="spinner-container">
-      <div className="spinner" />
-      {message && <p className="text-sm text-muted">{message}</p>}
-    </div>
-  );
-}
+export default function Spinner({size='md',message}){return <div className="spinner-wrap"><span className={`spinner spinner-${size}`}/>{message&&<p>{message}</p>}</div>}

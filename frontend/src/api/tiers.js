@@ -1,15 +1,1 @@
-import client from './client';
-
-export async function addTier(companyId, data) {
-  const res = await client.post(`/companies/${companyId}/tiers`, data);
-  return res.data;
-}
-
-export async function updateTier(companyId, tierId, data) {
-  const res = await client.put(`/companies/${companyId}/tiers/${tierId}`, data);
-  return res.data;
-}
-
-export async function deleteTier(companyId, tierId) {
-  await client.delete(`/companies/${companyId}/tiers/${tierId}`);
-}
+import c from './client';export const addTier=(id,d)=>c.post(`/companies/${id}/tiers`,d).then(r=>r.data);export const updateTier=(id,tid,d)=>c.put(`/companies/${id}/tiers/${tid}`,d).then(r=>r.data);export const deleteTier=(id,tid)=>c.delete(`/companies/${id}/tiers/${tid}`);
