@@ -11,7 +11,7 @@ import History from "./pages/History";
 export default function App() {
   const { isAuthenticated } = useAuth();
   return (
-    <Routes>
+    <Routes> 
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route element={<ProtectedRoute />}>
