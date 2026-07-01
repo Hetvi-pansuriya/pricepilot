@@ -6,7 +6,13 @@ import Button from "../common/Button";
 import Badge from "../common/Badge";
 import ErrorBanner from "../common/ErrorBanner";
 import FeatureTagInput from "./FeatureTagInput";
-export default function TierFormCard({ companyId, tier, onSaved, onDeleted }) {
+export default function TierFormCard({
+  companyId,
+  tier,
+  industry,
+  onSaved,
+  onDeleted,
+}) {
   const [v, setV] = useState({
       name: tier.name || "",
       price: tier.price ?? "",
@@ -94,22 +100,21 @@ export default function TierFormCard({ companyId, tier, onSaved, onDeleted }) {
         <Button loading={busy} onClick={save}>
           Save Tier
         </Button>
-        {tier.id && (
-          <Button
-            variant="danger"
-            onClick={async () => {
-              await deleteTier(companyId, tier.id);
-              onDeleted(tier.id);
-            }}
-          >
-            Delete
-          </Button>
-        )}
+        <Button
+          variant="danger"
+          onClick={async () => {
+            if (tier.id) await deleteTier(companyId, tier.id);
+            onDeleted(tier.id || tier._key);
+          }}
+        >
+          {tier.id ? "Delete Tier" : "Remove Unsaved Tier"}
+        </Button>
       </div>
       {tier.id && (
         <FeatureTagInput
           companyId={companyId}
           tierId={tier.id}
+          industry={industry}
           initial={tier.features || []}
         />
       )}

@@ -92,6 +92,14 @@ export default function AnalysisWaiting() {
             </Button>
           </div>
         )}
+        {!failed && !timedOut && (
+          <Button
+            variant="ghost"
+            onClick={() => n(`/company/${companyId}/setup`)}
+          >
+            ← Back to Setup
+          </Button>
+        )}
       </Card>
     </main>
   );

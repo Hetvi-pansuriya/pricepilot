@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createCompany, getCompany, updateCompany } from "../api/companies";
+import {
+  createCompany,
+  getCompany,
+  listCompanies,
+  updateCompany,
+} from "../api/companies";
 import { listCompetitors } from "../api/competitors";
 import { startAnalysis } from "../api/analysis";
 import Card from "../components/common/Card";
@@ -56,8 +61,26 @@ export default function CompanySetup() {
     if (!info.name.trim()) return setError("Company name is required");
     setBusy(true);
     try {
+      if (!id) {
+        const companies = await listCompanies();
+        const duplicate = companies.some(
+          (company) =>
+            company.name.trim().toLowerCase() === info.name.trim().toLowerCase(),
+        );
+        if (duplicate) {
+          setError(
+            "A company with this name is already registered. Please open the existing company or use a different name.",
+          );
+          return;
+        }
+      }
       const c = id ? await updateCompany(id, info) : await createCompany(info);
       setId(c.id);
+      setTiers((current) =>
+        current.length
+          ? current
+          : [{ _key: crypto.randomUUID() }],
+      );
       setStep(2);
     } catch (e) {
       setError(e.detail);
@@ -84,6 +107,9 @@ export default function CompanySetup() {
   return (
     <main className="page-container stack-lg">
       <div>
+        <Button variant="ghost" size="sm" onClick={() => n("/dashboard")}>
+          ← Back to Dashboard
+        </Button>
         <h1>Company Setup</h1>
         <p>Give PricePilot the signal it needs for a useful analysis.</p>
       </div>
@@ -142,28 +168,33 @@ export default function CompanySetup() {
         <div className="stack">
           <div className="row-between">
             <h2>Tiers & Features</h2>
-            <Button
-              variant="secondary"
-              onClick={() =>
-                setTiers((v) => [...v, { _key: crypto.randomUUID() }])
-              }
-            >
-              + Add Tier
-            </Button>
           </div>
           {tiers.map((t, i) => (
             <TierFormCard
               key={t.id || t._key}
               companyId={id}
               tier={t}
+              industry={info.industry}
               onSaved={(d) =>
                 setTiers((v) => v.map((x, j) => (j === i ? d : x)))
               }
-              onDeleted={(tid) =>
-                setTiers((v) => v.filter((x) => x.id !== tid))
+              onDeleted={(tierKey) =>
+                setTiers((v) =>
+                  v.filter((x) => (x.id || x._key) !== tierKey),
+                )
               }
             />
           ))}
+          <div className="tier-add-row">
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setTiers((v) => [...v, { _key: crypto.randomUUID() }])
+              }
+            >
+              + Add Another Tier
+            </Button>
+          </div>
           <div className="row-between">
             <Button variant="secondary" onClick={() => setStep(1)}>
               ← Back
