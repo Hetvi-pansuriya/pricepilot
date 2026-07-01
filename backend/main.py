@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
+print(f"DIAGNOSTIC: Looking for .env file at: {env_path}")
+print(f"DIAGNOSTIC: Does file exist? {env_path.exists()}")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
