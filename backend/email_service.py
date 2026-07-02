@@ -148,9 +148,7 @@ def _send(
             filename=f"pricing-report-{company_name.replace(' ', '-')}-{session_id[:8]}.pdf",
         )
 
-    with smtplib.SMTP(host, port, timeout=30) as server:
-        server.ehlo()
-        server.starttls()
+    with smtplib.SMTP_SSL(host, port, timeout=30) as server:
         server.ehlo()
         server.login(user, password)
         server.send_message(message)
