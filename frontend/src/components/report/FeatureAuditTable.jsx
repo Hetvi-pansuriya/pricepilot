@@ -17,7 +17,7 @@ export default function FeatureAuditTable({ module }) {
     <Card className="stack">
       <h2>Feature Audit</h2>
       <div className="table-wrap">
-        <table>
+        <table className="report-table">
           <thead>
             <tr>
               <th>Feature</th>

@@ -8,41 +8,53 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Card from "../common/Card";
-const money = (n) =>
+
+const money = (number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(n || 0);
+  }).format(number ?? 0);
+
 export default function RevenueChart({ module }) {
   const [value, setValue] = useState(20);
+  const mrr = module?.current_mrr ?? 0;
+  const scenarios = module?.scenarios ?? {};
+  const allValues = [
+    mrr,
+    ...Object.values(scenarios).map((scenario) => scenario.projected_mrr ?? 0),
+  ];
+  const maxVal = Math.max(...allValues, 100);
   const points = useMemo(() => {
     if (!module || module.error) return [];
     return [
-      { name: "Current", mrr: module.current_mrr, pct: 0, net: 0 },
-      ...Object.entries(module.scenarios || {}).map(([name, x]) => ({
+      { name: "Current", mrr, pct: 0 },
+      ...Object.entries(scenarios).map(([name, scenario]) => ({
         name,
-        mrr: x.projected_mrr,
+        mrr: scenario.projected_mrr ?? 0,
         pct: Number(name.replace(/\D/g, "")),
-        net: x.net_change_pct,
       })),
     ];
-  }, [module]);
-  if (!points.length)
+  }, [module, mrr, scenarios]);
+
+  if (!points.length) {
     return (
       <Card>
         <p>Revenue data unavailable</p>
       </Card>
     );
-  const sorted = [...points].sort((a, b) => a.pct - b.pct),
-    left = [...sorted].reverse().find((x) => x.pct <= value) || sorted[0],
-    right = sorted.find((x) => x.pct >= value) || sorted.at(-1),
-    ratio =
-      right.pct === left.pct ? 0 : (value - left.pct) / (right.pct - left.pct),
-    projected = Math.round(left.mrr + (right.mrr - left.mrr) * ratio),
-    change = (projected / module.current_mrr - 1) * 100;
+  }
+
+  const sorted = [...points].sort((a, b) => a.pct - b.pct);
+  const left = [...sorted].reverse().find((point) => point.pct <= value) || sorted[0];
+  const right = sorted.find((point) => point.pct >= value) || sorted.at(-1);
+  const ratio =
+    right.pct === left.pct ? 0 : (value - left.pct) / (right.pct - left.pct);
+  const projected = Math.round(left.mrr + (right.mrr - left.mrr) * ratio);
+  const change = mrr > 0 ? (projected / mrr - 1) * 100 : 0;
+
   return (
-    <Card className="stack">
+    <Card className="stack report-section">
       <div className="row-between">
         <h2>Revenue Sensitivity</h2>
         <strong>{module.recommended_increase} recommended</strong>
@@ -51,7 +63,10 @@ export default function RevenueChart({ module }) {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={points}>
             <XAxis dataKey="name" />
-            <YAxis tickFormatter={(v) => `$${Math.round(v / 1000)}k`} />
+            <YAxis
+              domain={[0, Math.ceil(maxVal * 1.1)]}
+              tickFormatter={(tick) => `$${Math.round(tick / 1000)}k`}
+            />
             <Tooltip formatter={money} />
             <Line
               type="monotone"
@@ -68,13 +83,13 @@ export default function RevenueChart({ module }) {
         min="0"
         max="30"
         value={value}
-        onChange={(e) => setValue(Number(e.target.value))}
+        onChange={(event) => setValue(Number(event.target.value))}
         style={{ "--fill": `${(value / 30) * 100}%` }}
       />
       <div className="grid-2">
         <div className="callout">
           <span>Current MRR</span>
-          <strong>{money(module.current_mrr)}</strong>
+          <strong className="mrr-display">{money(mrr)}</strong>
         </div>
         <div className="callout">
           <span>Projected MRR</span>
@@ -84,9 +99,7 @@ export default function RevenueChart({ module }) {
           </strong>
         </div>
       </div>
-      <p>
-        <em>{module.reasoning}</em>
-      </p>
+      <p><em>{module.reasoning}</em></p>
     </Card>
   );
 }

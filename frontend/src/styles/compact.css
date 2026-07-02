@@ -1,0 +1,10 @@
+.card{padding:var(--space-4)}
+.btn-md{padding:6px 14px}.btn-sm{padding:4px 10px}
+h1{font-size:var(--font-size-2xl)}h2{font-size:var(--font-size-xl)}h3{font-size:var(--font-size-lg)}
+.page-container{max-width:1060px;padding:var(--space-5) var(--space-4)}
+.company-name{font-size:var(--font-size-md);font-weight:700}.company-desc{font-size:var(--font-size-sm)}.company-card .font-sm{font-size:var(--font-size-xs)}
+.stat-value{font-size:var(--font-size-xl)}.stat-label{font-size:var(--font-size-xs)}
+.report-page{max-width:900px}.report-page .chart{height:180px}.report-page .exec-summary-text{font-size:var(--font-size-lg)}
+.report-page .report-section h2{font-size:var(--font-size-md);font-weight:700;letter-spacing:.03em}
+.report-page .report-table th,.report-page .report-table td{font-size:var(--font-size-sm);padding:var(--space-2) var(--space-3)}
+.sidebar .nav-link{font-size:var(--font-size-sm);padding:var(--space-2) var(--space-3)}.sidebar-context strong{font-size:var(--font-size-sm)}.profile-email{font-size:var(--font-size-xs)}

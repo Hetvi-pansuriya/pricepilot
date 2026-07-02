@@ -21,7 +21,8 @@ export default function History() {
     [rows, setRows] = useState([]),
     [company, setCompany] = useState(),
     [loading, setLoading] = useState(true),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [selected, setSelected] = useState([]);
   useEffect(() => {
     Promise.all([getHistory(companyId), getCompany(companyId)])
       .then(([h, c]) => {
@@ -43,6 +44,14 @@ export default function History() {
       setError(e.detail);
     }
   };
+  const toggleSelect = (sessionId) =>
+    setSelected((current) =>
+      current.includes(sessionId)
+        ? current.filter((id) => id !== sessionId)
+        : current.length < 2
+          ? [...current, sessionId]
+          : current,
+    );
   return (
     <main className="page-container stack-lg">
       <div className="row-between">
@@ -51,6 +60,11 @@ export default function History() {
           <p>{company?.name}</p>
         </div>
         <div className="row">
+          {selected.length === 2 && (
+            <Button onClick={() => n(`/company/${companyId}/compare/${selected[0]}/${selected[1]}`)}>
+              Compare selected →
+            </Button>
+          )}
           <Button variant="secondary" onClick={() => n("/dashboard")}>
             ← Dashboard
           </Button>
@@ -65,6 +79,7 @@ export default function History() {
           <table>
             <thead>
               <tr>
+                <th>Select</th>
                 <th>Date</th>
                 <th>Session ID</th>
                 <th>Status</th>
@@ -74,6 +89,17 @@ export default function History() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.session_id}>
+                  <td>
+                    {["completed", "partial"].includes(r.status) && (
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(r.session_id)}
+                        disabled={selected.length >= 2 && !selected.includes(r.session_id)}
+                        onChange={() => toggleSelect(r.session_id)}
+                        aria-label={`Select session ${r.session_id.slice(0, 8)}`}
+                      />
+                    )}
+                  </td>
                   <td>{new Date(r.started_at).toLocaleString()}</td>
                   <td>{r.session_id.slice(0, 8)}</td>
                   <td>

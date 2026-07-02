@@ -1,60 +1,109 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { listCompanies, deleteCompany } from "../api/companies";
+import { getHistory } from "../api/analysis";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import ErrorBanner from "../components/common/ErrorBanner";
 import EmptyState from "../components/common/EmptyState";
+import Spinner from "../components/common/Spinner";
 import "./Dashboard.css";
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export default function Dashboard() {
-  const [items, setItems] = useState([]),
-    [loading, setLoading] = useState(true),
-    [error, setError] = useState(""),
-    n = useNavigate();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [totalAnalyses, setTotalAnalyses] = useState(0);
+  const navigate = useNavigate();
+
   useEffect(() => {
     listCompanies()
-      .then(setItems)
-      .catch((e) => setError(e.detail))
+      .then(async (companies) => {
+        setItems(companies);
+        const histories = await Promise.all(
+          companies.map((company) =>
+            getHistory(company.id).catch(() => []),
+          ),
+        );
+        setTotalAnalyses(
+          histories.reduce((count, history) => count + history.length, 0),
+        );
+      })
+      .catch((err) => setError(err.detail))
       .finally(() => setLoading(false));
   }, []);
+
   return (
     <main className="page-container stack-lg">
       <div className="row-between">
         <div>
           <h1>Your Companies</h1>
-          <p>Manage pricing models and analysis.</p>
+          <p className="text-muted">Manage pricing models and run analysis.</p>
         </div>
-        <Button onClick={() => n("/company/new/setup")}>+ New Company</Button>
+        <Button onClick={() => navigate("/company/new/setup")}>
+          + New Company
+        </Button>
       </div>
       <ErrorBanner message={error} />
-      {loading ? (
-        <div className="grid-auto">
-          {[1, 2, 3].map((x) => (
-            <div className="card skeleton" key={x} />
-          ))}
+
+      {!loading && items.length > 0 && (
+        <div className="stats-row">
+          <div className="stat-card">
+            <span className="stat-value">{items.length}</span>
+            <span className="stat-label">Companies</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-value">{totalAnalyses}</span>
+            <span className="stat-label">Analyses Run</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-value accent">Active</span>
+            <span className="stat-label">Status</span>
+          </div>
         </div>
+      )}
+
+      {loading ? (
+        <Spinner message="Loading companies..." />
       ) : items.length ? (
-        <div className="grid-auto">
-          {items.map((c) => (
+        <div className="company-grid">
+          {items.map((company) => (
             <Card
-              key={c.id}
+              key={company.id}
               className="company-card stack"
-              onClick={() => n(`/company/${c.id}/setup`)}
+              onClick={() => navigate(`/company/${company.id}/setup`)}
             >
               <div className="row-between">
-                <h2>{c.name}</h2>
-                <Badge variant="info">{c.industry?.replaceAll("_", " ")}</Badge>
+                <h2 className="company-name">{company.name}</h2>
+                <Badge variant="info">
+                  {company.industry?.replaceAll("_", " ").toUpperCase()}
+                </Badge>
               </div>
-              <p>Created {new Date(c.created_at).toLocaleDateString()}</p>
-              <div className="row">
+              {company.description && (
+                <p className="company-desc text-muted">
+                  {company.description}
+                </p>
+              )}
+              <p className="text-muted font-sm">
+                Created {formatDate(company.created_at)}
+              </p>
+              <div className="row card-actions">
                 <Button size="sm">Open →</Button>
                 <Button
                   size="sm"
                   variant="ghost"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    n(`/company/${c.id}/history`);
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/company/${company.id}/history`);
                   }}
                 >
                   History
@@ -62,15 +111,21 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="danger"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Delete ${c.name}?`)) {
-                      await deleteCompany(c.id);
-                      setItems((v) => v.filter((x) => x.id !== c.id));
+                  onClick={async (event) => {
+                    event.stopPropagation();
+                    if (
+                      window.confirm(
+                        `Delete ${company.name}? This cannot be undone.`,
+                      )
+                    ) {
+                      await deleteCompany(company.id);
+                      setItems((current) =>
+                        current.filter((item) => item.id !== company.id),
+                      );
                     }
                   }}
                 >
-                  ×
+                  Delete
                 </Button>
               </div>
             </Card>
@@ -82,7 +137,7 @@ export default function Dashboard() {
           title="No companies yet"
           description="Add your first company to uncover its pricing potential."
           actionLabel="+ New Company"
-          onAction={() => n("/company/new/setup")}
+          onAction={() => navigate("/company/new/setup")}
         />
       )}
     </main>

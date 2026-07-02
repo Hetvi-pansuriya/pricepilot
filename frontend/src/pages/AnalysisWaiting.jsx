@@ -6,57 +6,116 @@ import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import ErrorBanner from "../components/common/ErrorBanner";
 import "./AnalysisWaiting.css";
+
 const labels = [
-  "💰 Calculating revenue scenarios",
-  "🔍 Auditing feature placement",
-  "📊 Benchmarking competitors",
-  "⚡ Generating recommendations",
+  "Calculating revenue scenarios",
+  "Auditing feature placement",
+  "Benchmarking competitors",
+  "Generating recommendations",
 ];
+
 export default function AnalysisWaiting() {
-  const { companyId, sessionId } = useParams(),
-    n = useNavigate(),
-    [activeId, setActiveId] = useState(sessionId);
-  const fetchFn = useCallback(
-    () => getHistory(companyId),
-    [companyId, activeId],
-  );
+  const { companyId, sessionId } = useParams();
+  const navigate = useNavigate();
+  const [activeId, setActiveId] = useState(sessionId);
+  const [elapsed, setElapsed] = useState(0);
+  const [streamProgress, setStreamProgress] = useState(null);
+  const [streamDone, setStreamDone] = useState(false);
+  const fetchFn = useCallback(() => getHistory(companyId), [companyId, activeId]);
   const stop = useCallback(
     (rows) =>
       ["completed", "partial", "failed"].includes(
-        rows.find((x) => x.session_id === activeId)?.status,
+        rows.find((item) => item.session_id === activeId)?.status,
       ),
     [activeId],
   );
   const { data = [], error, timedOut } = usePolling(fetchFn, stop);
   const current = useMemo(
-    () => data.find((x) => x.session_id === activeId),
+    () => data.find((item) => item.session_id === activeId),
     [data, activeId],
   );
-  const done = ["completed", "partial"].includes(current?.status),
-    failed = current?.status === "failed",
-    lit = done ? 4 : current?.status === "running" ? 2 : 0;
+  const done = streamDone || ["completed", "partial"].includes(current?.status);
+  const failed = current?.status === "failed";
+  const progress = done ? 100 : streamProgress ?? current?.progress ?? 0;
+  const lit = done ? 4 : Math.min(Math.floor(progress / 25), 3);
+
   useEffect(() => {
-    if (done && current) {
+    const token = localStorage.getItem("token");
+    if (!token) return undefined;
+    const source = new EventSource(
+      `${import.meta.env.VITE_API_URL}/analysis/progress/${activeId}?token=${encodeURIComponent(token)}`,
+    );
+    source.onmessage = (event) => {
+      try {
+        const update = JSON.parse(event.data);
+        setStreamProgress(update.progress ?? 0);
+        if (
+          update.progress >= 100 ||
+          ["completed", "partial"].includes(update.status)
+        ) {
+          setStreamDone(true);
+          source.close();
+        }
+      } catch {
+        source.close();
+      }
+    };
+    source.onerror = () => source.close();
+    return () => source.close();
+  }, [activeId]);
+
+  useEffect(() => {
+    if (done || failed) return undefined;
+    const timer = setInterval(() => setElapsed((seconds) => seconds + 1), 1000);
+    return () => clearInterval(timer);
+  }, [done, failed, activeId]);
+
+  useEffect(() => {
+    if (done) {
       const timer = setTimeout(
-        () => n(`/company/${companyId}/report/${current.session_id}`),
+        () => navigate(`/company/${companyId}/report/${activeId}`),
         1200,
       );
       return () => clearTimeout(timer);
     }
-  }, [done, current, companyId, n]);
+    return undefined;
+  }, [done, activeId, companyId, navigate]);
+
+  const retry = async () => {
+    const session = await startAnalysis(companyId);
+    setElapsed(0);
+    setStreamProgress(null);
+    setStreamDone(false);
+    setActiveId(session.session_id);
+  };
+
   return (
     <main className="page-container waiting">
       <Card glow className="waiting-card stack-lg">
-        <div className="orb" />
-        <div>
-          <h1>
-            {done
-              ? "Analysis complete!"
-              : failed
-                ? "Analysis failed"
-                : "Analyzing your pricing strategy..."}
-          </h1>
-          <p>Usually takes 20–30 seconds. Powered by Gemini AI</p>
+        <div className="waiting-header">
+          <div className={`progress-ring ${done ? "complete" : ""}`}>
+            <span className="progress-pct">
+              {done ? "✓" : `${Math.min(progress, 99)}%`}
+            </span>
+          </div>
+          <div>
+            <h1>
+              {done
+                ? "Analysis complete!"
+                : failed
+                  ? "Analysis failed"
+                  : "Analyzing your pricing strategy..."}
+            </h1>
+            <p className="text-muted">
+              Usually takes 20–30 seconds. Powered by Groq AI
+            </p>
+            {!done && !failed && (
+              <p className="elapsed-time">
+                Elapsed: {Math.floor(elapsed / 60)}:
+                {String(elapsed % 60).padStart(2, "0")}
+              </p>
+            )}
+          </div>
         </div>
         <ErrorBanner
           message={
@@ -66,27 +125,31 @@ export default function AnalysisWaiting() {
               : "")
           }
         />
-        <div className="stack-sm">
-          {labels.map((x, i) => (
-            <div key={x} className={`progress-item ${i < lit ? "lit" : ""}`}>
-              {i < lit ? "✓ " : ""}
-              {x}
+        <div className="steps-list">
+          {labels.map((label, index) => (
+            <div
+              key={label}
+              className={`step-item ${
+                index < lit
+                  ? "done"
+                  : index === lit && !done
+                    ? "active"
+                    : "pending"
+              }`}
+            >
+              <span className="step-icon">
+                {index < lit || done ? "✓" : index === lit ? "⟳" : "○"}
+              </span>
+              <span>{label}</span>
             </div>
           ))}
         </div>
         {(failed || timedOut) && (
           <div className="row">
-            <Button
-              onClick={async () => {
-                const s = await startAnalysis(companyId);
-                setActiveId(s.session_id);
-              }}
-            >
-              ↻ Retry Analysis
-            </Button>
+            <Button onClick={retry}>↻ Retry Analysis</Button>
             <Button
               variant="secondary"
-              onClick={() => n(`/company/${companyId}/setup`)}
+              onClick={() => navigate(`/company/${companyId}/setup`)}
             >
               Back to Setup
             </Button>
@@ -95,7 +158,7 @@ export default function AnalysisWaiting() {
         {!failed && !timedOut && (
           <Button
             variant="ghost"
-            onClick={() => n(`/company/${companyId}/setup`)}
+            onClick={() => navigate(`/company/${companyId}/setup`)}
           >
             ← Back to Setup
           </Button>

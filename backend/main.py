@@ -46,10 +46,10 @@ async def lifespan(app: FastAPI):
         app.state.groq_client = None
         print("WARNING: GROQ_API_KEY not set.")
 
-    if os.getenv("RESEND_API_KEY", ""):
-        print("SUCCESS: Email notifications enabled (Resend).")
+    if os.getenv("SMTP_USER", "") and os.getenv("SMTP_PASS", ""):
+        print("SUCCESS: Email notifications enabled (SMTP).")
     else:
-        print("INFO: RESEND_API_KEY not set; email notifications disabled.")
+        print("INFO: SMTP credentials not set; email notifications disabled.")
 
     yield
     # Shutdown: nothing to clean up

@@ -33,6 +33,10 @@ export default function Report() {
       </main>
     );
   const j = report.json_report || {},
+    m1 = j.module1_revenue || {},
+    currentMrr = m1.current_mrr ?? 0,
+    hasRevenueData =
+      currentMrr > 0 || Object.keys(m1.scenarios || {}).length > 0,
     strategies =
       j.module4_recommendations && !j.module4_recommendations.error
         ? j.module4_recommendations.strategies || []
@@ -51,7 +55,7 @@ export default function Report() {
     URL.revokeObjectURL(url);
   };
   return (
-    <main className="page-container stack-lg">
+    <main className="page-container stack-lg report-page">
       <div className="row-between">
         <div>
           <h1>Pricing Analysis Report</h1>
@@ -71,18 +75,24 @@ export default function Report() {
           >
             ⬇ Download PDF
           </Button>
+          <Button
+            variant="secondary"
+            onClick={() => n(`/company/${companyId}/setup`)}
+          >
+            Update &amp; re-analyze →
+          </Button>
         </div>
       </div>
       <ExecutiveSummary module={j.module4_recommendations} />
-      <RevenueChart module={j.module1_revenue} />
-      <div className="grid-2">
+      <RevenueChart module={hasRevenueData ? m1 : null} />
+      <div className="grid-2 report-section">
         <FeatureAuditTable module={j.module2_features} />
         <CompetitorTable module={j.module3_benchmark} />
       </div>
-      <section className="stack">
+      <section className="stack report-section">
         <h2>3 Alternative Pricing Strategies</h2>
         {strategies.length ? (
-          <div className="grid-3">
+          <div className="strategies-stack">
             {strategies.map((s, i) => (
               <StrategyCard
                 key={i}

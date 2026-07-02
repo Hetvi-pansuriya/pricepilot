@@ -8,6 +8,7 @@ import CompanySetup from "./pages/CompanySetup";
 import AnalysisWaiting from "./pages/AnalysisWaiting";
 import Report from "./pages/Report";
 import History from "./pages/History";
+import ReportCompare from "./pages/ReportCompare";
 export default function App() {
   const { isAuthenticated } = useAuth();
   return (
@@ -27,6 +28,7 @@ export default function App() {
           element={<Report />}
         />
         <Route path="/company/:companyId/history" element={<History />} />
+        <Route path="/company/:companyId/compare/:sessionA/:sessionB" element={<ReportCompare />} />
       </Route>
       <Route
         path="/"

@@ -122,3 +122,13 @@ GET /analysis/history/{company_id}   → past sessions
 - WeasyPrint on Windows may require GTK runtime — see [WeasyPrint docs](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows).
 - All UUIDs are used as primary keys — no integer sequences.
 - All protected routes require `Authorization: Bearer <token>` header.
+
+## Gmail analysis notifications
+
+1. Enable 2-Step Verification in your Google Account.
+2. Open Security → App passwords and create one for “Mail”.
+3. Set `SMTP_USER`, `SMTP_PASS`, and `FROM_EMAIL` on Render using the values
+   documented in `.env.smtp.example`.
+4. Set `FRONTEND_URL` to the deployed frontend origin.
+
+Email failures are logged and never fail an analysis.

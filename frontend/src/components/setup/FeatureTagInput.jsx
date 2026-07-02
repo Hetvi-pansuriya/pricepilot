@@ -1,97 +1,110 @@
 import { useState } from "react";
 import { addFeature, deleteFeature } from "../../api/features";
+import { getIndustryFeatures } from "../../data/industryFeatures";
 import Button from "../common/Button";
 import ErrorBanner from "../common/ErrorBanner";
-import { getIndustryFeatures } from "../../data/industryFeatures";
+import "./FeatureTagInput.css";
+
 export default function FeatureTagInput({
   companyId,
   tierId,
-  industry,
+  industry = "other",
   initial = [],
   onChange,
 }) {
-  const [features, setFeatures] = useState(initial),
-    [name, setName] = useState(""),
-    [error, setError] = useState("");
-  const add = async (suggestedName = name) => {
-    const featureName = suggestedName.trim();
-    if (!featureName) return;
+  const [features, setFeatures] = useState(initial);
+  const [customInput, setCustomInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [error, setError] = useState("");
+  const added = new Set(features.map((f) => f.feature_name.toLowerCase()));
+  const suggestions = getIndustryFeatures(industry).filter(
+    (name) => !added.has(name.toLowerCase()),
+  );
+
+  const add = async (name) => {
+    const featureName = name.trim();
+    if (!featureName || added.has(featureName.toLowerCase())) return;
     try {
-      const f = await addFeature(companyId, tierId, {
+      const saved = await addFeature(companyId, tierId, {
         feature_name: featureName,
       });
-      const next = [...features, f];
+      const next = [...features, saved];
       setFeatures(next);
+      setCustomInput("");
       onChange?.(next);
-      setName("");
-    } catch (e) {
-      setError(e.detail);
+    } catch (err) {
+      setError(err.detail);
     }
   };
-  const selectedNames = new Set(
-    features.map((feature) => feature.feature_name.toLowerCase()),
-  );
-  const suggestions = getIndustryFeatures(industry).filter(
-    (suggestion) => !selectedNames.has(suggestion.toLowerCase()),
-  );
-  const remove = async (f) => {
+
+  const remove = async (feature) => {
     try {
-      await deleteFeature(companyId, tierId, f.id);
-      const next = features.filter((x) => x.id !== f.id);
+      if (feature.id) await deleteFeature(companyId, tierId, feature.id);
+      const next = features.filter((item) =>
+        feature.id
+          ? item.id !== feature.id
+          : item.feature_name !== feature.feature_name,
+      );
       setFeatures(next);
       onChange?.(next);
-    } catch (e) {
-      setError(e.detail);
+    } catch {
+      setError("Could not remove feature");
     }
   };
+
   return (
-    <div className="stack-sm">
-      <ErrorBanner message={error} />
-      <div className="row">
-        {features.map((f) => (
-          <span className="tag" key={f.id || f.feature_name}>
-            {f.feature_name}
-            <Button size="sm" variant="ghost" onClick={() => remove(f)}>
-              ×
-            </Button>
-          </span>
-        ))}
+    <div className="feature-picker">
+      <ErrorBanner message={error} onDismiss={() => setError("")} />
+      <div className="row-between">
+        <label className="feature-label">Features ({features.length})</label>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={!suggestions.length}
+          onClick={() => setShowSuggestions((shown) => !shown)}
+        >
+          {showSuggestions ? "Hide suggestions" : `+ Suggestions (${suggestions.length})`}
+        </Button>
       </div>
-      <div className="stack-sm">
-        <strong className="feature-heading">Suggested for this industry</strong>
-        <p className="hint">Click a feature to add it to this tier.</p>
-        <div className="feature-suggestions">
-          {suggestions.map((suggestion) => (
-            <Button
-              key={suggestion}
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={() => add(suggestion)}
-            >
-              + {suggestion}
+      {showSuggestions && (
+        <div className="feature-suggestion-panel">
+          {suggestions.map((name) => (
+            <Button key={name} type="button" size="sm" variant="secondary" onClick={() => add(name)}>
+              + {name}
             </Button>
           ))}
-          {!suggestions.length && (
-            <span className="hint">All suggested features are added.</span>
-          )}
         </div>
-      </div>
+      )}
+      {features.length ? (
+        <div className="feature-list">
+          {features.map((feature) => (
+            <div className="feature-list-item" key={feature.id || feature.feature_name}>
+              <span>{feature.feature_name}</span>
+              <Button type="button" size="sm" variant="ghost" onClick={() => remove(feature)} aria-label={`Remove ${feature.feature_name}`}>
+                ×
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="feature-empty">No features added yet. Use suggestions or type below.</div>
+      )}
       <div className="row">
         <input
           className="compact-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Add a custom feature"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              add(name);
+          value={customInput}
+          onChange={(event) => setCustomInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              add(customInput);
             }
           }}
+          placeholder="Add custom feature..."
         />
-        <Button size="sm" variant="secondary" onClick={() => add(name)}>
-          Add custom
+        <Button type="button" size="sm" disabled={!customInput.trim()} onClick={() => add(customInput)}>
+          Add
         </Button>
       </div>
     </div>
