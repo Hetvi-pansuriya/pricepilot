@@ -123,12 +123,10 @@ GET /analysis/history/{company_id}   → past sessions
 - All UUIDs are used as primary keys — no integer sequences.
 - All protected routes require `Authorization: Bearer <token>` header.
 
-## Gmail analysis notifications
+## Email notifications and password resets
 
-1. Enable 2-Step Verification in your Google Account.
-2. Open Security → App passwords and create one for “Mail”.
-3. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `FROM_EMAIL`
-   in Render's Environment tab.
-4. Set `FRONTEND_URL` to the deployed frontend origin.
+Set `SENDGRID_API_KEY`, `FROM_EMAIL`, and `FRONTEND_URL` in Render's
+Environment tab. `FROM_EMAIL` must be a verified SendGrid sender.
 
-Email failures are logged and never fail an analysis.
+Analysis and password-reset email failures are logged and never fail the
+analysis or expose whether an account exists.

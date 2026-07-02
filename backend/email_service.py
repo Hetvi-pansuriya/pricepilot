@@ -193,3 +193,45 @@ def _send(
     else:
         print(f"[Email] SendGrid error body: {response.body}")
         return False
+
+
+async def send_password_reset_email(to_email: str, reset_link: str) -> bool:
+    try:
+        return await asyncio.to_thread(_send_reset, to_email, reset_link)
+    except Exception as error:
+        print(f"[Email] Reset email failed: {error}")
+        return False
+
+
+def _send_reset(to_email: str, reset_link: str) -> bool:
+    api_key = os.getenv("SENDGRID_API_KEY", "")
+    from_email = os.getenv("FROM_EMAIL", "")
+    if not api_key or not from_email:
+        print("[Email] Credentials not set; reset email skipped.")
+        return False
+    try:
+        from sendgrid import SendGridAPIClient
+        from sendgrid.helpers.mail import Mail
+    except ImportError:
+        print("[Email] sendgrid package is not installed.")
+        return False
+
+    safe_link = html.escape(reset_link, quote=True)
+    html_content = f"""
+    <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;">
+      <h2 style="color:#1a1d2e;">Reset your PricePilot password</h2>
+      <p style="color:#5a6080;">Click below to set a new password. This link expires in 1 hour.</p>
+      <a href="{safe_link}" style="display:inline-block;margin:20px 0;padding:12px 28px;
+        background:#6457e8;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
+        Reset Password &rarr;
+      </a>
+      <p style="color:#9399b5;font-size:12px;">If you did not request this, ignore this email.</p>
+    </div>"""
+    message = Mail(
+        from_email=from_email,
+        to_emails=to_email,
+        subject="PricePilot — Reset your password",
+        html_content=html_content,
+    )
+    response = SendGridAPIClient(api_key).send(message)
+    return response.status_code in (200, 202)

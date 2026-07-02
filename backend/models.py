@@ -18,6 +18,9 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     companies = relationship("Company", back_populates="owner", cascade="all, delete-orphan")
+    password_reset_tokens = relationship(
+        "PasswordResetToken", cascade="all, delete-orphan"
+    )
 
 
 class Company(Base):
@@ -102,3 +105,17 @@ class Report(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     session = relationship("AnalysisSession", back_populates="report")
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    token = Column(String, unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(String, nullable=False, default="no")

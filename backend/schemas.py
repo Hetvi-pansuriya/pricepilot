@@ -27,6 +27,11 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class ResetPasswordBody(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6)
+
+
 # ─── Company ──────────────────────────────────────────────────────────────────
 
 class CompanyCreate(BaseModel):

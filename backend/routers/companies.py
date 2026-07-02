@@ -124,6 +124,30 @@ async def delete_company(
     await db.commit()
 
 
+@router.put("/{company_id}", response_model=CompanyResponse)
+async def update_company(
+    company_id: uuid.UUID,
+    body: CompanyCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Company).where(
+            Company.id == company_id,
+            Company.user_id == current_user.id,
+        )
+    )
+    company = result.scalar_one_or_none()
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    company.name = body.name
+    company.industry = body.industry
+    company.description = body.description
+    await db.commit()
+    await db.refresh(company)
+    return company
+
+
 # ─── Pricing Tiers ────────────────────────────────────────────────────────────
 
 @router.post("/{company_id}/tiers", response_model=TierResponse, status_code=status.HTTP_201_CREATED)
