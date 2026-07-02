@@ -1,11 +1,35 @@
-"""Non-fatal SMTP notifications for completed pricing analyses."""
+"""Non-fatal SendGrid email notifications for completed pricing analyses."""
 
 import asyncio
 import html
 import os
-import smtplib
-from email.message import EmailMessage
 from pathlib import Path
+import base64
+
+
+async def send_analysis_complete_email(
+    to_email: str,
+    company_name: str,
+    company_id: str,
+    session_id: str,
+    pdf_path: str | None,
+    current_mrr: float = 0,
+    recommended_increase: str = "N/A",
+) -> bool:
+    try:
+        return await asyncio.to_thread(
+            _send,
+            to_email,
+            company_name,
+            company_id,
+            session_id,
+            pdf_path,
+            current_mrr,
+            recommended_increase,
+        )
+    except Exception as error:
+        print(f"[Email] Non-fatal SendGrid failure: {error}")
+        return False
 
 
 def _send(
@@ -17,37 +41,33 @@ def _send(
     current_mrr: float = 0,
     recommended_increase: str = "N/A",
 ) -> bool:
-    host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    port = int(os.getenv("SMTP_PORT", "587"))
-    user = os.getenv("SMTP_USER", "")
-    password = os.getenv("SMTP_PASS", "")
-    from_email = os.getenv("FROM_EMAIL", user)
+    api_key = os.getenv("SENDGRID_API_KEY", "")
+    from_email = os.getenv("FROM_EMAIL", "")
     frontend = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
-    if not user or not password:
-        print("[Email] SMTP not configured; notification skipped.")
+    if not api_key:
+        print("[Email] SENDGRID_API_KEY not set; notification skipped.")
+        return False
+
+    if not from_email:
+        print("[Email] FROM_EMAIL not set; notification skipped.")
+        return False
+
+    try:
+        from sendgrid import SendGridAPIClient
+        from sendgrid.helpers.mail import (
+            Mail, Attachment, FileContent, FileName,
+            FileType, Disposition
+        )
+    except ImportError:
+        print("[Email] sendgrid package not installed. Run: pip install sendgrid")
         return False
 
     report_url = f"{frontend}/company/{company_id}/report/{session_id}"
     safe_name = html.escape(company_name)
     mrr_display = f"${current_mrr:,.2f}" if current_mrr else "N/A"
 
-    message = EmailMessage()
-    message["Subject"] = f"PricePilot — Analysis complete for {company_name}"
-    message["From"] = f"PricePilot <{from_email}>"
-    message["To"] = to_email
-
-    # Plain text fallback
-    message.set_content(
-        f"Your pricing analysis for {company_name} is ready.\n\n"
-        f"Current MRR: {mrr_display}\n"
-        f"Recommended price increase: {recommended_increase}\n\n"
-        f"View full report: {report_url}"
-    )
-
-    # HTML version
-    message.add_alternative(
-        f"""<!DOCTYPE html>
+    html_content = f"""<!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#0f1117;">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -58,9 +78,7 @@ def _send(
       <!-- Header -->
       <tr>
         <td style="background:linear-gradient(135deg,#667eea,#764ba2);padding:28px 32px;">
-          <div style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;">
-            PricePilot
-          </div>
+          <div style="font-size:20px;font-weight:700;color:#fff;">PricePilot</div>
           <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:4px;">
             SaaS Pricing Analyzer
           </div>
@@ -74,11 +92,12 @@ def _send(
             Analysis complete ✓
           </h2>
           <p style="margin:0 0 20px 0;font-size:14px;color:#94a3b8;line-height:1.6;">
-            Your pricing analysis for <strong style="color:#e2e8f0;">{safe_name}</strong>
+            Your pricing analysis for
+            <strong style="color:#e2e8f0;">{safe_name}</strong>
             has finished. Here's a quick summary:
           </p>
 
-          <!-- Stats row -->
+          <!-- Stats -->
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <tr>
               <td width="48%" style="background:#16213e;border:1px solid #2a2f45;
@@ -99,14 +118,14 @@ def _send(
             </tr>
           </table>
 
-          <p style="margin:0 0 20px 0;font-size:13px;color:#94a3b8;line-height:1.6;">
+          <p style="margin:0 0 24px 0;font-size:13px;color:#94a3b8;line-height:1.6;">
             The full report includes revenue scenario modeling, feature placement audit,
             competitor benchmarking, and 3 alternative pricing strategies.
-            {('<br><br><strong style="color:#e2e8f0;">PDF report attached.</strong>'
-              if pdf_path and Path(pdf_path).is_file() else '')}
+            {"<br><br><strong style='color:#e2e8f0;'>PDF report attached.</strong>"
+              if pdf_path and Path(pdf_path).is_file() else ""}
           </p>
 
-          <!-- CTA Button -->
+          <!-- CTA -->
           <table cellpadding="0" cellspacing="0">
             <tr>
               <td style="background:#667eea;border-radius:8px;">
@@ -135,48 +154,42 @@ def _send(
   </td></tr>
 </table>
 </body>
-</html>""",
-        subtype="html",
+</html>"""
+
+    plain_text = (
+        f"Your pricing analysis for {company_name} is ready.\n\n"
+        f"Current MRR: {mrr_display}\n"
+        f"Recommended price increase: {recommended_increase}\n\n"
+        f"View full report: {report_url}"
+    )
+
+    message = Mail(
+        from_email=from_email,
+        to_emails=to_email,
+        subject=f"PricePilot — Analysis complete for {company_name}",
+        plain_text_content=plain_text,
+        html_content=html_content,
     )
 
     # Attach PDF if it exists
     if pdf_path and Path(pdf_path).is_file():
-        message.add_attachment(
-            Path(pdf_path).read_bytes(),
-            maintype="application",
-            subtype="pdf",
-            filename=f"pricing-report-{company_name.replace(' ', '-')}-{session_id[:8]}.pdf",
+        pdf_data = Path(pdf_path).read_bytes()
+        encoded = base64.b64encode(pdf_data).decode()
+        attachment = Attachment(
+            FileContent(encoded),
+            FileName(f"pricing-report-{company_name.replace(' ', '-')}-{session_id[:8]}.pdf"),
+            FileType("application/pdf"),
+            Disposition("attachment"),
         )
+        message.attachment = attachment
 
-    with smtplib.SMTP_SSL(host, port, timeout=30) as server:
-        server.ehlo()
-        server.login(user, password)
-        server.send_message(message)
+    sg = SendGridAPIClient(api_key)
+    response = sg.send(message)
 
-    print(f"[Email] Sent successfully to {to_email}")
-    return True
+    print(f"[Email] SendGrid response: {response.status_code} → {to_email}")
 
-
-async def send_analysis_complete_email(
-    to_email: str,
-    company_name: str,
-    company_id: str,
-    session_id: str,
-    pdf_path: str | None,
-    current_mrr: float = 0,
-    recommended_increase: str = "N/A",
-) -> bool:
-    try:
-        return await asyncio.to_thread(
-            _send,
-            to_email,
-            company_name,
-            company_id,
-            session_id,
-            pdf_path,
-            current_mrr,
-            recommended_increase,
-        )
-    except Exception as error:
-        print(f"[Email] Non-fatal SMTP failure: {error}")
+    if response.status_code in (200, 202):
+        return True
+    else:
+        print(f"[Email] SendGrid error body: {response.body}")
         return False
