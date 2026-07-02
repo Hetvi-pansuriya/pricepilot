@@ -5,7 +5,9 @@ import usePolling from "../hooks/usePolling";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import ErrorBanner from "../components/common/ErrorBanner";
+import { useAuth } from "../context/AuthContext";
 import "./AnalysisWaiting.css";
+import "./EmailToast.css";
 
 const labels = [
   "Calculating revenue scenarios",
@@ -17,10 +19,12 @@ const labels = [
 export default function AnalysisWaiting() {
   const { companyId, sessionId } = useParams();
   const navigate = useNavigate();
+  const { email } = useAuth();
   const [activeId, setActiveId] = useState(sessionId);
   const [elapsed, setElapsed] = useState(0);
   const [streamProgress, setStreamProgress] = useState(null);
   const [streamDone, setStreamDone] = useState(false);
+  const [showEmailToast, setShowEmailToast] = useState(false);
   const fetchFn = useCallback(() => getHistory(companyId), [companyId, activeId]);
   const stop = useCallback(
     (rows) =>
@@ -73,13 +77,23 @@ export default function AnalysisWaiting() {
   useEffect(() => {
     if (done) {
       const timer = setTimeout(
-        () => navigate(`/company/${companyId}/report/${activeId}`),
+        () =>
+          navigate(`/company/${companyId}/report/${activeId}`, {
+            state: { showEmailToast: true, email },
+          }),
         1200,
       );
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [done, activeId, companyId, navigate]);
+  }, [done, activeId, companyId, email, navigate]);
+
+  useEffect(() => {
+    if (!done) return undefined;
+    setShowEmailToast(true);
+    const timer = setTimeout(() => setShowEmailToast(false), 5000);
+    return () => clearTimeout(timer);
+  }, [done]);
 
   const retry = async () => {
     const session = await startAnalysis(companyId);
@@ -164,6 +178,18 @@ export default function AnalysisWaiting() {
           </Button>
         )}
       </Card>
+      {showEmailToast && (
+        <div className="email-toast">
+          <span>✉</span>
+          <div>
+            <strong>Report emailed!</strong>
+            <p>Sent to {email} with PDF attached.</p>
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => setShowEmailToast(false)}>
+            ×
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

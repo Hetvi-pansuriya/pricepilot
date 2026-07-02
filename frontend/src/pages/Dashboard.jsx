@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { listCompanies, deleteCompany } from "../api/companies";
-import { getHistory } from "../api/analysis";
+import { getHistory, getReport } from "../api/analysis";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
@@ -9,6 +9,7 @@ import ErrorBanner from "../components/common/ErrorBanner";
 import EmptyState from "../components/common/EmptyState";
 import Spinner from "../components/common/Spinner";
 import "./Dashboard.css";
+import "./DashboardLight.css";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -23,6 +24,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [totalAnalyses, setTotalAnalyses] = useState(0);
+  const [lastAnalysisDate, setLastAnalysisDate] = useState(null);
+  const [latestMrr, setLatestMrr] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +40,21 @@ export default function Dashboard() {
         setTotalAnalyses(
           histories.reduce((count, history) => count + history.length, 0),
         );
+        const allSessions = histories
+          .flat()
+          .sort((a, b) => new Date(b.started_at) - new Date(a.started_at));
+        setLastAnalysisDate(allSessions[0]?.started_at || null);
+        const latestCompleted = allSessions.find((session) =>
+          ["completed", "partial"].includes(session.status),
+        );
+        if (latestCompleted) {
+          const latestReport = await getReport(latestCompleted.session_id).catch(
+            () => null,
+          );
+          setLatestMrr(
+            latestReport?.json_report?.module1_revenue?.current_mrr ?? null,
+          );
+        }
       })
       .catch((err) => setError(err.detail))
       .finally(() => setLoading(false));
@@ -66,8 +84,23 @@ export default function Dashboard() {
             <span className="stat-label">Analyses Run</span>
           </div>
           <div className="stat-card">
-            <span className="stat-value accent">Active</span>
-            <span className="stat-label">Status</span>
+            <span className="stat-value">
+              {lastAnalysisDate
+                ? new Date(lastAnalysisDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "—"}
+            </span>
+            <span className="stat-label">Last Analysis</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-value">
+              {latestMrr == null
+                ? "—"
+                : `$${Number(latestMrr).toLocaleString()}`}
+            </span>
+            <span className="stat-label">Recent MRR</span>
           </div>
         </div>
       )}

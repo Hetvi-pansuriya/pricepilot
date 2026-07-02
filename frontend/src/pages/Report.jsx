@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getReport, getReportPdfUrl } from "../api/analysis";
 import Button from "../components/common/Button";
 import Spinner from "../components/common/Spinner";
@@ -10,16 +10,26 @@ import FeatureAuditTable from "../components/report/FeatureAuditTable";
 import CompetitorTable from "../components/report/CompetitorTable";
 import StrategyCard from "../components/report/StrategyCard";
 import "./Report.css";
+import "./EmailToast.css";
 export default function Report() {
   const { companyId, sessionId } = useParams(),
     n = useNavigate(),
+    location = useLocation(),
     [report, setReport] = useState(),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [showEmailToast, setShowEmailToast] = useState(
+      Boolean(location.state?.showEmailToast),
+    );
   useEffect(() => {
     getReport(sessionId)
       .then(setReport)
       .catch((e) => setError(e.detail));
   }, [sessionId]);
+  useEffect(() => {
+    if (!showEmailToast) return undefined;
+    const timer = setTimeout(() => setShowEmailToast(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showEmailToast]);
   if (error)
     return (
       <main className="page-container">
@@ -105,6 +115,18 @@ export default function Report() {
           <p>Recommendations unavailable</p>
         )}
       </section>
+      {showEmailToast && (
+        <div className="email-toast">
+          <span>✉</span>
+          <div>
+            <strong>Report emailed!</strong>
+            <p>Sent to {location.state?.email} with PDF attached.</p>
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => setShowEmailToast(false)}>
+            ×
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

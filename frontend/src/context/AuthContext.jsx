@@ -24,6 +24,12 @@ export function AuthProvider({ children }) {
         setToken(null);
         setEmail("");
       },
+      deleteAccount: async () => {
+        await api.deleteAccount();
+        localStorage.clear();
+        setToken(null);
+        setEmail("");
+      },
     }),
     [token, email],
   );
