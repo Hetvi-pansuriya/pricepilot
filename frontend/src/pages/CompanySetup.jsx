@@ -13,6 +13,7 @@ import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import Spinner from "../components/common/Spinner";
 import ErrorBanner from "../components/common/ErrorBanner";
+import Badge from "../components/common/Badge";
 import TierFormCard from "../components/setup/TierFormCard";
 import CompetitorInput from "../components/setup/CompetitorInput";
 import "./CompanySetup.css";
@@ -98,6 +99,24 @@ export default function CompanySetup() {
       setBusy(false);
     }
   };
+  const openReview = async () => {
+    setBusy(true);
+    try {
+      const company = await getCompany(id);
+      setInfo({
+        name: company.name,
+        industry: company.industry,
+        description: company.description || "",
+      });
+      setTiers(company.tiers || []);
+      setCompetitors(company.competitors || []);
+      setStep(4);
+    } catch (e) {
+      setError(e.detail);
+    } finally {
+      setBusy(false);
+    }
+  };
   if (loading)
     return (
       <main className="page-container">
@@ -114,7 +133,7 @@ export default function CompanySetup() {
         <p>Give PricePilot the signal it needs for a useful analysis.</p>
       </div>
       <div className="steps">
-        {[1, 2, 3].map((x) => (
+        {[1, 2, 3, 4].map((x) => (
           <div
             className={`step ${x === step ? "active" : x < step ? "done" : ""}`}
             key={x}
@@ -245,8 +264,119 @@ export default function CompanySetup() {
             <Button variant="secondary" onClick={() => setStep(2)}>
               ← Back
             </Button>
+            <Button loading={busy} onClick={openReview}>
+              Review Setup →
+            </Button>
+          </div>
+        </div>
+      )}
+      {step === 4 && (
+        <div className="stack-lg">
+          <div className="row-between">
+            <div>
+              <h2>Review Your Setup</h2>
+              <p>Confirm everything below before running the analysis.</p>
+            </div>
+            <Badge variant="info">Final step</Badge>
+          </div>
+          <Card className="stack">
+            <div className="row-between">
+              <h3>Company Information</h3>
+              <Button size="sm" variant="ghost" onClick={() => setStep(1)}>
+                ✎ Edit
+              </Button>
+            </div>
+            <div className="review-grid">
+              <div>
+                <span>Name</span>
+                <strong>{info.name}</strong>
+              </div>
+              <div>
+                <span>Industry</span>
+                <strong>{info.industry.replaceAll("_", " ")}</strong>
+              </div>
+              <div className="review-wide">
+                <span>Description</span>
+                <strong>{info.description || "No description provided"}</strong>
+              </div>
+            </div>
+          </Card>
+          <Card className="stack">
+            <div className="row-between">
+              <h3>Tiers & Features</h3>
+              <Button size="sm" variant="ghost" onClick={() => setStep(2)}>
+                ✎ Edit
+              </Button>
+            </div>
+            <div className="review-tier-list">
+              {tiers
+                .filter((tier) => tier.id)
+                .map((tier) => (
+                  <div className="review-tier" key={tier.id}>
+                    <div className="row-between">
+                      <strong>{tier.name}</strong>
+                      <span>
+                        ${Number(tier.price).toLocaleString()} /{" "}
+                        {tier.billing_cycle}
+                      </span>
+                    </div>
+                    <p>
+                      {tier.user_count} users · Churn{" "}
+                      {tier.churn_rate ?? "Not set"}
+                    </p>
+                    <div className="review-features">
+                      {(tier.features || []).length ? (
+                        tier.features.map((feature) => (
+                          <span key={feature.id || feature.feature_name}>
+                            {feature.feature_name}
+                          </span>
+                        ))
+                      ) : (
+                        <em>No features added</em>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </Card>
+          <Card className="stack">
+            <div className="row-between">
+              <h3>Competitors</h3>
+              <Button size="sm" variant="ghost" onClick={() => setStep(3)}>
+                ✎ Edit
+              </Button>
+            </div>
+            {competitors.length ? (
+              <div className="review-competitors">
+                {competitors.map((competitor) => (
+                  <div key={competitor.id}>
+                    <span>{competitor.url}</span>
+                    <Badge
+                      variant={
+                        ["success", "manual"].includes(
+                          competitor.scrape_status,
+                        )
+                          ? "success"
+                          : competitor.scrape_status === "failed"
+                            ? "danger"
+                            : "warning"
+                      }
+                    >
+                      {competitor.scrape_status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No competitors added. This is optional.</p>
+            )}
+          </Card>
+          <div className="row-between">
+            <Button variant="secondary" onClick={() => setStep(3)}>
+              ← Back
+            </Button>
             <Button loading={busy} onClick={finish}>
-              Finish Setup & Run Analysis →
+              Confirm & Run Analysis →
             </Button>
           </div>
         </div>

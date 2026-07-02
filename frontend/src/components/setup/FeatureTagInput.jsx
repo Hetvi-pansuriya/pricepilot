@@ -13,23 +13,27 @@ export default function FeatureTagInput({
   onChange,
 }) {
   const [features, setFeatures] = useState(initial);
+  const [selection, setSelection] = useState("");
   const [customInput, setCustomInput] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState("");
-  const added = new Set(features.map((f) => f.feature_name.toLowerCase()));
-  const suggestions = getIndustryFeatures(industry).filter(
-    (name) => !added.has(name.toLowerCase()),
+  const addedNames = new Set(
+    features.map((feature) => feature.feature_name.toLowerCase()),
   );
+  const suggestions = getIndustryFeatures(industry).filter(
+    (name) => !addedNames.has(name.toLowerCase()),
+  );
+  const isCustom = selection === "__custom";
 
-  const add = async (name) => {
-    const featureName = name.trim();
-    if (!featureName || added.has(featureName.toLowerCase())) return;
+  const add = async (rawName) => {
+    const featureName = rawName.trim();
+    if (!featureName || addedNames.has(featureName.toLowerCase())) return;
     try {
       const saved = await addFeature(companyId, tierId, {
         feature_name: featureName,
       });
       const next = [...features, saved];
       setFeatures(next);
+      setSelection("");
       setCustomInput("");
       onChange?.(next);
     } catch (err) {
@@ -55,58 +59,98 @@ export default function FeatureTagInput({
   return (
     <div className="feature-picker">
       <ErrorBanner message={error} onDismiss={() => setError("")} />
-      <div className="row-between">
-        <label className="feature-label">Features ({features.length})</label>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          disabled={!suggestions.length}
-          onClick={() => setShowSuggestions((shown) => !shown)}
+      <label className="feature-label" htmlFor={`features-${tierId}`}>
+        Features ({features.length})
+      </label>
+      <div className="feature-select-row">
+        <select
+          id={`features-${tierId}`}
+          value={selection}
+          onChange={(event) => setSelection(event.target.value)}
         >
-          {showSuggestions ? "Hide suggestions" : `+ Suggestions (${suggestions.length})`}
-        </Button>
-      </div>
-      {showSuggestions && (
-        <div className="feature-suggestion-panel">
+          <option value="">Select a feature to add…</option>
           {suggestions.map((name) => (
-            <Button key={name} type="button" size="sm" variant="secondary" onClick={() => add(name)}>
-              + {name}
-            </Button>
+            <option key={name} value={name}>
+              {name}
+            </option>
           ))}
+          <option value="__custom">Other / New feature…</option>
+        </select>
+        {!isCustom && (
+          <Button
+            type="button"
+            size="sm"
+            disabled={!selection}
+            onClick={() => add(selection)}
+          >
+            Add
+          </Button>
+        )}
+      </div>
+      {isCustom && (
+        <div className="custom-feature-box">
+          <div>
+            <strong>Add a new feature</strong>
+            <p>Enter a feature that is not available in the list.</p>
+          </div>
+          <div className="feature-select-row">
+            <input
+              autoFocus
+              value={customInput}
+              onChange={(event) => setCustomInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  add(customInput);
+                }
+              }}
+              placeholder="Enter feature name…"
+            />
+            <Button
+              type="button"
+              size="sm"
+              disabled={!customInput.trim()}
+              onClick={() => add(customInput)}
+            >
+              Add New
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setSelection("");
+                setCustomInput("");
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
       {features.length ? (
         <div className="feature-list">
           {features.map((feature) => (
-            <div className="feature-list-item" key={feature.id || feature.feature_name}>
+            <div
+              className="feature-list-item"
+              key={feature.id || feature.feature_name}
+            >
               <span>{feature.feature_name}</span>
-              <Button type="button" size="sm" variant="ghost" onClick={() => remove(feature)} aria-label={`Remove ${feature.feature_name}`}>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => remove(feature)}
+                aria-label={`Remove ${feature.feature_name}`}
+              >
                 ×
               </Button>
             </div>
           ))}
         </div>
       ) : (
-        <div className="feature-empty">No features added yet. Use suggestions or type below.</div>
+        <div className="feature-empty">No features added yet.</div>
       )}
-      <div className="row">
-        <input
-          className="compact-input"
-          value={customInput}
-          onChange={(event) => setCustomInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              add(customInput);
-            }
-          }}
-          placeholder="Add custom feature..."
-        />
-        <Button type="button" size="sm" disabled={!customInput.trim()} onClick={() => add(customInput)}>
-          Add
-        </Button>
-      </div>
     </div>
   );
 }

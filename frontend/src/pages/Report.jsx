@@ -72,6 +72,9 @@ export default function Report() {
           <p>Session {sessionId.slice(0, 8)}</p>
         </div>
         <div className="row">
+          <Button variant="secondary" onClick={() => n("/dashboard")}>
+            ← Dashboard
+          </Button>
           <Button
             variant="secondary"
             onClick={() => n(`/company/${companyId}/history`)}
