@@ -6,7 +6,8 @@ __pycache__/
 *.pyc
 
 # Generated files
-backend/generated_pdfs/
+generated_pdfs/*
+!generated_pdfs/.gitkeep
 
 # IDE
 .vscode/

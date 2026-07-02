@@ -93,7 +93,7 @@ app.include_router(analysis.router, prefix="/analysis", tags=["analysis"])
 def health():
     return {"status": "ok", "version": "1.0.0"}
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 def root():
     return {
         "message": "SaaS Pricing Analyzer API is running!"

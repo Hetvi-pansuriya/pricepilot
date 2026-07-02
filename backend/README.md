@@ -127,8 +127,8 @@ GET /analysis/history/{company_id}   → past sessions
 
 1. Enable 2-Step Verification in your Google Account.
 2. Open Security → App passwords and create one for “Mail”.
-3. Set `SMTP_USER`, `SMTP_PASS`, and `FROM_EMAIL` on Render using the values
-   documented in `.env.smtp.example`.
+3. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, and `FROM_EMAIL`
+   in Render's Environment tab.
 4. Set `FRONTEND_URL` to the deployed frontend origin.
 
 Email failures are logged and never fail an analysis.
