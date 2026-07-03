@@ -449,23 +449,9 @@ After running analysis, the report should show:
 
 ---
 
-## Built With
-
-This project was built as part of a **Trilogy Innovations internship application** — Trilogy acquires under-monetizing SaaS companies, and pricing optimization is one of the first levers they pull post-acquisition. PricePilot automates the pricing audit that would otherwise take a consultant three weeks.
-
-**Stack decisions were made for interview-relevance:**
-- FastAPI async — demonstrates Python async programming and concurrent I/O
-- Structured AI outputs — demonstrates prompt engineering for reliable JSON
-- SSE progress streaming — demonstrates real-time server-client communication
-- Parallel module execution — demonstrates `asyncio.gather()` for performance
-- 3-layer scraping fallback — demonstrates graceful degradation
-
-
-
----
 
 <div align="center">
 
-**[Live Demo](https://pricing-analyzer-32hw.vercel.app/) · [API Docs](https://pricing-analyzer-8u3n.onrender.com/docs) 
+[Live Demo](https://pricing-analyzer-32hw.vercel.app/) · [API Docs](https://pricing-analyzer-8u3n.onrender.com/docs) 
 
 </div>
