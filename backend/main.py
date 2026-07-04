@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 # Explicitly point at the .env file in the same directory as this script
 # This ensures it works whether uvicorn is launched from this dir or another
@@ -32,6 +33,16 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"WARNING: Could not connect to database on startup: {e}")
 
+    # Auto-migrate: add missing columns safely
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text(
+                "ALTER TABLE competitors ADD COLUMN IF NOT EXISTS clean_scraped_text TEXT"
+            ))
+        print("SUCCESS: Migration check complete.")
+    except Exception as e:
+        print(f"WARNING: Migration check failed: {e}")
+        
     # Create PDF output directory
     pdf_dir = os.path.join(os.path.dirname(__file__), "generated_pdfs")
     os.makedirs(pdf_dir, exist_ok=True)
