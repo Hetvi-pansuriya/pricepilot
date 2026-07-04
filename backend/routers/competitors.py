@@ -10,7 +10,7 @@ from database import get_db
 from models import Company, Competitor, User
 from schemas import CompetitorCreate, CompetitorResponse, ManualCompetitorText
 from routers.auth import get_current_user
-from scraper import scrape_competitor
+from scraper import _clean_pricing_content, scrape_competitor
 
 router = APIRouter()
 MAX_COMPETITORS = 5
@@ -36,6 +36,7 @@ async def _run_scrape_and_save(competitor_id: uuid.UUID, url: str):
         comp = q.scalar_one_or_none()
         if comp:
             comp.raw_scraped_text = result["text"]
+            comp.clean_scraped_text = result.get("clean_text", "")
             comp.scrape_status = result["status"]
             await db.commit()
 
@@ -105,6 +106,7 @@ async def set_manual_text(
         raise HTTPException(status_code=404, detail="Competitor not found")
 
     competitor.raw_scraped_text = body.text
+    competitor.clean_scraped_text = _clean_pricing_content(body.text)
     competitor.scrape_status = "manual"
     await db.commit()
     await db.refresh(competitor)

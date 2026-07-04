@@ -65,7 +65,53 @@ async def _load_company_data(company_id: uuid.UUID, db: AsyncSession) -> dict:
             "name": comp.name or comp.url,
             "url": comp.url,
             "raw_scraped_text": comp.raw_scraped_text or "",
+            "clean_scraped_text": comp.clean_scraped_text or "",
+            "scrape_status": comp.scrape_status,
         })
+
+    # Give empty failed/pending competitors one concurrent retry at analysis time.
+    from scraper import scrape_competitors_concurrent
+
+    retry_candidates = [
+        {"id": competitor["id"], "url": competitor["url"]}
+        for competitor in competitors
+        if competitor.get("scrape_status")
+        in {
+            "failed",
+            "manual_required",
+            "pending",
+            "too_short_or_no_pricing",
+            "no_pricing_content_after_render",
+            "playwright_not_installed",
+        }
+        and not competitor.get("raw_scraped_text")
+    ]
+    if retry_candidates:
+        print(
+            f"[Scraper] Re-attempting {len(retry_candidates)} "
+            "competitor(s) before analysis."
+        )
+        retry_results = await scrape_competitors_concurrent(retry_candidates)
+        retry_map = {str(result["id"]): result for result in retry_results}
+        model_map = {str(model.id): model for model in company.competitors}
+        changed = False
+        for competitor in competitors:
+            retry = retry_map.get(competitor["id"])
+            if not retry or not retry["status"].startswith("success"):
+                continue
+            competitor["raw_scraped_text"] = retry["text"]
+            competitor["clean_scraped_text"] = retry.get("clean_text", "")
+            competitor["scrape_status"] = retry["status"]
+            db_competitor = model_map.get(competitor["id"])
+            if db_competitor:
+                db_competitor.raw_scraped_text = competitor["raw_scraped_text"]
+                db_competitor.clean_scraped_text = competitor[
+                    "clean_scraped_text"
+                ]
+                db_competitor.scrape_status = competitor["scrape_status"]
+                changed = True
+        if changed:
+            await db.commit()
 
     return {
         "id": str(company.id),

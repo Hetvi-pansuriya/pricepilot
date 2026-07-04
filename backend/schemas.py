@@ -112,6 +112,7 @@ class CompetitorResponse(BaseModel):
     name: Optional[str]
     url: str
     scrape_status: str
+    clean_scraped_text: Optional[str] = None
     created_at: datetime
     model_config = {"from_attributes": True}
 

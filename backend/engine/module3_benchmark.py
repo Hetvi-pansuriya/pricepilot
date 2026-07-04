@@ -49,7 +49,13 @@ async def run_module3(
 
     # Check if we have any usable competitor data
     usable_competitors = [
-        c for c in competitors if c.get("raw_scraped_text", "").strip()
+        c
+        for c in competitors
+        if (
+            c.get("clean_scraped_text")
+            or c.get("raw_scraped_text")
+            or ""
+        ).strip()
     ]
 
     our_value_scores = _build_our_value_scores(tiers)
@@ -59,12 +65,19 @@ async def run_module3(
     if not usable_competitors:
         return empty
 
-    # Build competitor text block (cap each to 6000 chars to stay within token limits)
+    # Prefer condensed pricing text; fall back to raw/manual content.
     competitor_block = ""
     for comp in usable_competitors:
+        text_to_use = (
+            comp.get("clean_scraped_text")
+            or comp.get("raw_scraped_text")
+            or ""
+        )
+        if not text_to_use.strip():
+            continue
         competitor_block += (
-            f"--- COMPETITOR: {comp.get('name', comp['url'])} (URL: {comp['url']}) ---\n"
-            f"{comp['raw_scraped_text'][:6000]}\n\n"
+            f"--- COMPETITOR: {comp.get('name', comp['url'])} ---\n"
+            f"{text_to_use[:5000]}\n\n"
         )
 
     tiers_summary = [

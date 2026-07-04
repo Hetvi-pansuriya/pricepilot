@@ -74,6 +74,7 @@ class Competitor(Base):
     name = Column(String, nullable=True)
     url = Column(String, nullable=False)
     raw_scraped_text = Column(Text, nullable=True)
+    clean_scraped_text = Column(Text, nullable=True)
     scrape_status = Column(String, nullable=False, default="pending")
     created_at = Column(DateTime, default=datetime.utcnow)
 
