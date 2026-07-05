@@ -11,5 +11,6 @@ alembic upgrade head
 cd ..
 
 # Chromium runtime for JavaScript-rendered pricing pages
+export PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright
 playwright install-deps chromium
 playwright install chromium
