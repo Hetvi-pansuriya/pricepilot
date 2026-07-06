@@ -11,6 +11,9 @@ alembic upgrade head
 cd ..
 
 # Chromium runtime for JavaScript-rendered pricing pages
-export PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright
+export PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
 playwright install-deps chromium
 playwright install chromium
+
+echo "Checking Playwright install..."
+ls /opt/render/project/src/.playwright/ || echo "WARNING: Playwright dir not found"

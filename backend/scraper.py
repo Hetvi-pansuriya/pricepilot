@@ -1,6 +1,7 @@
 """Five-layer asynchronous competitor pricing scraper for PricePilot."""
+
 import os
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/.cache/ms-playwright"
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/project/src/.playwright"
 
 import asyncio
 import hashlib
