@@ -17,3 +17,5 @@ generated_pdfs/*
 .DS_Store
 Thumbs.db
 
+dist/
+
