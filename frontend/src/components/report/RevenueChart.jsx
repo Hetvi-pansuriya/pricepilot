@@ -20,11 +20,6 @@ export default function RevenueChart({ module }) {
   const [value, setValue] = useState(20);
   const mrr = module?.current_mrr ?? 0;
   const scenarios = module?.scenarios ?? {};
-  const allValues = [
-    mrr,
-    ...Object.values(scenarios).map((scenario) => scenario.projected_mrr ?? 0),
-  ];
-  const maxVal = Math.max(...allValues, 100);
   const points = useMemo(() => {
     if (!module || module.error) return [];
     return [
@@ -64,7 +59,7 @@ export default function RevenueChart({ module }) {
           <LineChart data={points}>
             <XAxis dataKey="name" />
             <YAxis
-              domain={[0, Math.ceil(maxVal * 1.1)]}
+              domain={[0, "auto"]}
               tickFormatter={(tick) => `$${Math.round(tick / 1000)}k`}
             />
             <Tooltip formatter={money} />

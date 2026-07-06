@@ -121,7 +121,7 @@ export default function AnalysisWaiting() {
                   : "Analyzing your pricing strategy..."}
             </h1>
             <p className="text-muted">
-              Usually takes 20–30 seconds. Powered by Groq AI
+              Usually takes 20–30 seconds. Powered by AI
             </p>
             {!done && !failed && (
               <p className="elapsed-time">

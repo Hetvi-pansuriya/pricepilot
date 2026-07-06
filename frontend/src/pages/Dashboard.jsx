@@ -164,6 +164,7 @@ export default function Dashboard() {
                   >
                     History
                   </Button>
+                  
                   <div className="card-actions-right">
                     <Button
                       size="sm"

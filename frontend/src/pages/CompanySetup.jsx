@@ -28,6 +28,33 @@ const industries = [
   "ecommerce_tools",
   "other",
 ];
+
+const parseIndustryDescription = (description = "") => {
+  const marker = "\n\nIndustry description: ";
+  const markerIndex = description.indexOf(marker);
+  if (markerIndex === -1) {
+    return { description, industry_description: "" };
+  }
+  return {
+    description: description.slice(0, markerIndex),
+    industry_description: description.slice(markerIndex + marker.length),
+  };
+};
+
+const getScrapeStatusBadge = (status) => {
+  const key = String(status || "").toLowerCase();
+  if (key === "pending") return { label: "Scraping...", variant: "warning" };
+  if (key === "success" || key === "success_layer1" || key === "success_layer2") {
+    return { label: "Scraped ✓", variant: "success" };
+  }
+  if (key === "failed") return { label: "Failed", variant: "danger" };
+  if (key === "manual") return { label: "Manual", variant: "info" };
+  if (key === "manual_required") {
+    return { label: "Paste required", variant: "warning" };
+  }
+  return { label: status || "Unknown", variant: "neutral" };
+};
+
 export default function CompanySetup() {
   const p = useParams(),
     n = useNavigate(),
@@ -36,6 +63,7 @@ export default function CompanySetup() {
     [info, setInfo] = useState({
       name: "",
       industry: "saas_b2b",
+      industry_description: "",
       description: "",
     }),
     [tiers, setTiers] = useState([]),
@@ -47,10 +75,12 @@ export default function CompanySetup() {
     if (id)
       getCompany(id)
         .then((c) => {
+          const parsed = parseIndustryDescription(c.description || "");
           setInfo({
             name: c.name,
             industry: c.industry,
-            description: c.description || "",
+            industry_description: parsed.industry_description,
+            description: parsed.description,
           });
           setTiers(c.tiers || []);
           setCompetitors(c.competitors || []);
@@ -60,6 +90,9 @@ export default function CompanySetup() {
   }, []);
   const saveInfo = async () => {
     if (!info.name.trim()) return setError("Company name is required");
+    if (info.industry === "other" && !info.industry_description?.trim()) {
+      return setError("Please describe your industry");
+    }
     setBusy(true);
     try {
       if (!id) {
@@ -75,7 +108,21 @@ export default function CompanySetup() {
           return;
         }
       }
-      const c = id ? await updateCompany(id, info) : await createCompany(info);
+      const industryDescription = info.industry_description?.trim();
+      const payload = {
+        name: info.name,
+        industry: info.industry,
+        description:
+          info.industry === "other" && industryDescription
+            ? [
+                info.description?.trim(),
+                `Industry description: ${industryDescription}`,
+              ]
+                .filter(Boolean)
+                .join("\n\n")
+            : info.description,
+      };
+      const c = id ? await updateCompany(id, payload) : await createCompany(payload);
       setId(c.id);
       setTiers((current) =>
         current.length
@@ -103,10 +150,12 @@ export default function CompanySetup() {
     setBusy(true);
     try {
       const company = await getCompany(id);
+      const parsed = parseIndustryDescription(company.description || "");
       setInfo({
         name: company.name,
         industry: company.industry,
-        description: company.description || "",
+        industry_description: parsed.industry_description,
+        description: parsed.description,
       });
       setTiers(company.tiers || []);
       setCompetitors(company.competitors || []);
@@ -157,7 +206,14 @@ export default function CompanySetup() {
             <label>Industry</label>
             <select
               value={info.industry}
-              onChange={(e) => setInfo({ ...info, industry: e.target.value })}
+              onChange={(e) =>
+                setInfo({
+                  ...info,
+                  industry: e.target.value,
+                  industry_description:
+                    e.target.value === "other" ? info.industry_description : "",
+                })
+              }
             >
               {industries.map((x) => (
                 <option key={x} value={x}>
@@ -166,6 +222,18 @@ export default function CompanySetup() {
               ))}
             </select>
           </div>
+          {info.industry === "other" && (
+            <Input
+              label="Describe your industry"
+              name="industry_description"
+              value={info.industry_description}
+              onChange={(e) =>
+                setInfo({ ...info, industry_description: e.target.value })
+              }
+              placeholder="e.g. Legal tech, EdTech, HealthTech..."
+              required
+            />
+          )}
           <div className="form-field">
             <label>Description</label>
             <textarea
@@ -295,6 +363,12 @@ export default function CompanySetup() {
                 <span>Industry</span>
                 <strong>{info.industry.replaceAll("_", " ")}</strong>
               </div>
+              {info.industry === "other" && info.industry_description && (
+                <div className="review-wide">
+                  <span>Industry Details</span>
+                  <strong>{info.industry_description}</strong>
+                </div>
+              )}
               <div className="review-wide">
                 <span>Description</span>
                 <strong>{info.description || "No description provided"}</strong>
@@ -348,24 +422,19 @@ export default function CompanySetup() {
             </div>
             {competitors.length ? (
               <div className="review-competitors">
-                {competitors.map((competitor) => (
-                  <div key={competitor.id}>
-                    <span>{competitor.url}</span>
-                    <Badge
-                      variant={
-                        ["success", "manual"].includes(
-                          competitor.scrape_status,
-                        )
-                          ? "success"
-                          : competitor.scrape_status === "failed"
-                            ? "danger"
-                            : "warning"
-                      }
-                    >
-                      {competitor.scrape_status}
-                    </Badge>
-                  </div>
-                ))}
+                {competitors.map((competitor) => {
+                  const statusBadge = getScrapeStatusBadge(
+                    competitor.scrape_status,
+                  );
+                  return (
+                    <div key={competitor.id}>
+                      <span>{competitor.url}</span>
+                      <Badge variant={statusBadge.variant}>
+                        {statusBadge.label}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p>No competitors added. This is optional.</p>

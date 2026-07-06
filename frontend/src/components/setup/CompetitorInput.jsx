@@ -7,6 +7,21 @@ import {
 import Button from "../common/Button";
 import Badge from "../common/Badge";
 import ErrorBanner from "../common/ErrorBanner";
+
+const getStatusBadge = (status) => {
+  const key = String(status || "").toLowerCase();
+  if (key === "pending") return { label: "Scraping...", variant: "warning" };
+  if (key === "success" || key === "success_layer1" || key === "success_layer2") {
+    return { label: "Scraped ✓", variant: "success" };
+  }
+  if (key === "failed") return { label: "Failed", variant: "danger" };
+  if (key === "manual") return { label: "Manual", variant: "info" };
+  if (key === "manual_required") {
+    return { label: "Paste required", variant: "warning" };
+  }
+  return { label: status, variant: "neutral" };
+};
+
 export default function CompetitorInput({
   companyId,
   item,
@@ -18,6 +33,9 @@ export default function CompetitorInput({
     [text, setText] = useState(""),
     [error, setError] = useState("");
   const status = item?.scrape_status;
+  const statusBadge = getStatusBadge(status);
+  const statusKey = String(status || "").toLowerCase();
+  const canPasteManual = ["failed", "manual_required"].includes(statusKey);
   return (
     <div className="card stack-sm">
       <ErrorBanner message={error} />
@@ -30,17 +48,7 @@ export default function CompetitorInput({
           placeholder="https://competitor.com/pricing"
         />
         {status && (
-          <Badge
-            variant={
-              status === "success" || status === "manual"
-                ? "success"
-                : status === "failed"
-                  ? "danger"
-                  : "warning"
-            }
-          >
-            {status}
-          </Badge>
+          <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
         )}
         {item ? (
           <Button
@@ -69,7 +77,7 @@ export default function CompetitorInput({
           </Button>
         )}
       </div>
-      {status === "failed" && (
+      {canPasteManual && (
         <Button
           size="sm"
           variant="secondary"
