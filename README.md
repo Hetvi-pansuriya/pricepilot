@@ -452,6 +452,6 @@ After running analysis, the report should show:
 
 <div align="center">
 
-[Live Demo](https://pricing-analyzer-32hw.vercel.app/) · [API Docs](https://pricing-analyzer-8u3n.onrender.com/docs) 
+[Live Demo](https://pricepilot-six.vercel.app) · [API Docs](https://pricing-analyzer-8u3n.onrender.com/docs) 
 
 </div>
