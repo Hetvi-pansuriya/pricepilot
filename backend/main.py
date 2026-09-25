@@ -84,6 +84,8 @@ app.add_middleware(
         "http://localhost:5173",       # React dev server (Vite default port)
         "http://localhost:3000",       # React dev server (Create React App default port)
         frontend_url,                  # deployed Vercel production frontend URL
+        "https://pricing-analyzer-32hw.vercel.app", # Alternative Vercel URL
+        "https://pricepilot-six.vercel.app",        # Alternative Vercel URL
     ],
     allow_credentials=True,           # allow cookies and Authorization headers to be sent
     allow_methods=["*"],              # allow all HTTP methods (GET, POST, DELETE, etc.)
