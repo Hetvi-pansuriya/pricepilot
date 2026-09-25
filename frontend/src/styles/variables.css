@@ -1,0 +1,76 @@
+﻿:root {
+  /* ── Brand palette: Deep Dark + Steel Blue + Warm Cream ── */
+  --color-primary:        #506385;
+  --color-primary-hover:  #3d5070;
+  --color-primary-dim:    rgba(80, 99, 133, 0.14);
+  --color-primary-glow:   rgba(80, 99, 133, 0.30);
+  --color-primary-light:  rgba(80, 99, 133, 0.08);
+
+  /* ── Backgrounds ── */
+  --color-bg:             #101015;
+  --color-surface:        #1a1a22;
+  --color-surface-2:      #20202c;
+  --color-surface-3:      #272736;
+
+  /* ── Borders ── */
+  --color-border:         rgba(80, 99, 133, 0.20);
+  --color-border-hover:   rgba(80, 99, 133, 0.42);
+
+  /* ── Text ── */
+  --color-text:           #F1F0E1;
+  --color-text-muted:     rgba(241, 240, 225, 0.60);
+  --color-text-subtle:    rgba(241, 240, 225, 0.32);
+
+  /* ── Semantic ── */
+  --color-success:        #6b9e78;
+  --color-success-dim:    rgba(107, 158, 120, 0.14);
+  --color-danger:         #c0666e;
+  --color-danger-dim:     rgba(192, 102, 110, 0.14);
+  --color-warning:        #c4944a;
+  --color-warning-dim:    rgba(196, 148, 74, 0.14);
+  --color-info:           #506385;
+  --color-info-dim:       rgba(80, 99, 133, 0.14);
+
+  /* ── Spacing ── */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --space-7: 48px; --space-8: 64px;
+
+  /* ── Radius ── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* ── Typography ── */
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-size-xs: 11px; --font-xs: 11px;
+  --font-size-sm: 13px; --font-sm: 13px;
+  --font-size-md: 14px; --font-md: 14px;
+  --font-size-lg: 16px; --font-lg: 16px;
+  --font-size-xl: 20px; --font-xl: 20px;
+  --font-size-2xl: 24px; --font-2xl: 24px;
+  --font-size-3xl: 30px; --font-3xl: 30px;
+
+  /* ── Layout ── */
+  --sidebar-width:   220px;
+  --topbar-height:   52px;
+  --content-width:   1080px;
+  --auth-width:      440px;
+  --orb-size:        96px;
+  --border-thin:     1px;
+  --border-accent:   4px;
+
+  /* ── Shadows ── */
+  --shadow-sm:    0 1px 4px rgba(0, 0, 0, 0.50);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-lg:    0 8px 32px rgba(0, 0, 0, 0.60);
+  --shadow-glow:  0 0 24px rgba(80, 99, 133, 0.22);
+  --shadow-card:  0 1px 4px rgba(0, 0, 0, 0.50);
+  --shadow-hover: 0 6px 24px rgba(80, 99, 133, 0.28);
+
+  /* ── Transition ── */
+  --transition: all .18s ease;
+}

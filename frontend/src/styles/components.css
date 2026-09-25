@@ -1,0 +1,238 @@
+.card {
+    background: var(--color-surface);
+    border: var(--border-thin) solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5)
+}
+
+.card-elevated {
+    box-shadow: var(--shadow-md)
+}
+
+.card-glow {
+    box-shadow: var(--shadow-glow)
+}
+
+.card-interactive {
+    cursor: pointer;
+    transition: var(--transition)
+}
+
+.card-interactive:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(calc(var(--space-1)*-1))
+}
+
+.btn {
+    border: var(--border-thin) solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    transition: var(--transition)
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-text)
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover)
+}
+
+.btn-secondary {
+    background: var(--color-surface-3);
+    border-color: var(--color-border);
+    color: var(--color-text)
+}
+
+.btn-danger {
+    background: var(--color-danger-dim);
+    color: var(--color-danger)
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--color-text-muted)
+}
+
+.btn-sm {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm)
+}
+
+.btn-md {
+    padding: var(--space-3) var(--space-4)
+}
+
+.btn-lg {
+    padding: var(--space-4) var(--space-5)
+}
+
+.btn-full {
+    width: 100%
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2)
+}
+
+.form-field label {
+    font-size: var(--font-size-sm);
+    font-weight: 600
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    background: var(--color-surface-2);
+    border: var(--border-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    padding: var(--space-3)
+}
+
+.form-field textarea {
+    min-height: calc(var(--space-8)*2);
+    resize: vertical
+}
+
+.hint {
+    color: var(--color-text-subtle);
+    font-size: var(--font-size-xs)
+}
+
+.field-error {
+    color: var(--color-danger);
+    font-size: var(--font-size-sm)
+}
+
+.badge {
+    display: inline-flex;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: capitalize
+}
+
+.badge-success {
+    color: var(--color-success);
+    background: var(--color-success-dim)
+}
+
+.badge-danger {
+    color: var(--color-danger);
+    background: var(--color-danger-dim)
+}
+
+.badge-warning {
+    color: var(--color-warning);
+    background: var(--color-warning-dim)
+}
+
+.badge-info {
+    color: var(--color-info);
+    background: var(--color-info-dim)
+}
+
+.badge-neutral {
+    color: var(--color-text-muted);
+    background: var(--color-surface-3)
+}
+
+.spinner-wrap {
+    text-align: center;
+    color: var(--color-text-muted)
+}
+
+.spinner {
+    display: inline-block;
+    border: var(--space-1) solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: spin 1s linear infinite
+}
+
+.spinner-sm {
+    width: var(--space-4);
+    height: var(--space-4)
+}
+
+.spinner-md {
+    width: var(--space-6);
+    height: var(--space-6)
+}
+
+.spinner-lg {
+    width: var(--space-7);
+    height: var(--space-7)
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(1turn)
+    }
+}
+
+.error-banner {
+    background: var(--color-danger-dim);
+    border: var(--border-thin) solid var(--color-danger);
+    color: var(--color-danger);
+    padding: var(--space-3);
+    border-radius: var(--radius-md)
+}
+
+.empty {
+    text-align: center;
+    padding: var(--space-8) var(--space-5)
+}
+
+.empty-icon {
+    font-size: var(--font-size-3xl)
+}
+
+.muted {
+    color: var(--color-text-muted)
+}
+
+.danger {
+    color: var(--color-danger)
+}
+
+.success {
+    color: var(--color-success)
+}
+
+.table-wrap {
+    overflow: auto
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse
+}
+
+th,
+td {
+    text-align: left;
+    padding: var(--space-3);
+    border-bottom: var(--border-thin) solid var(--color-border);
+    font-size: var(--font-size-sm)
+}
+
+th {
+    color: var(--color-text-muted)
+}
